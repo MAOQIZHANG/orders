@@ -34,10 +34,8 @@ class Order(db.Model):
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(63))
-    created_at = db.Column(db.datetime, default=datetime.utcnow)
+    create_time = db.Column(db.datetime, default=datetime.utcnow)
     address = db.Column(db.String(255), nullable=False)
-    payment_method = db.Column(db.String(50), nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
     cost_amount = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(50), nullable=False)
     items = db.relationship("Item", backref="order", lazy=True)
@@ -137,7 +135,6 @@ class Item(db.Model):
     title = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
-    url = db.Column(db.String(255), nullable=True)
     product_id = db.Column(db.String(255), nullable=False)
     status = db.Column(db.String(50), nullable=False)
 
