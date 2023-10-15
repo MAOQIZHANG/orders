@@ -81,12 +81,20 @@ class TestOrderService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_get_order_list(self):
-        """It should Get a list of Accounts"""
+        """It should Get a list of Orders"""
         self._create_orders(5)
         resp = self.client.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
+
+    # def test_get_order_by_name(self):
+    #     """It should Get an Order by ID"""
+    #     orders = self._create_orders(3)
+    #     resp = self.client.get(BASE_URL, query_string=f"order_id={orders[1].id}")
+    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    #     data = resp.get_json()
+    #     self.assertEqual(data[1], orders[1].id)
 
     def test_create_order(self):
         """It should Create a new Order"""
@@ -119,8 +127,8 @@ class TestOrderService(TestCase):
         )
 
         # Check that the location header was correct by getting it
-        # resp = self.client.get(location, content_type="application/json")
-        resp = self.client.get(location)
+        print("test_routes.py: location = %s" % location)
+        resp = self.client.get(location, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         new_order = resp.get_json()
         print(new_order)
