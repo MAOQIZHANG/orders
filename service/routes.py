@@ -49,7 +49,7 @@ def check_content_type(media_type):
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 ######################################################################
-# FIND A ORDER BY ID OR RETURN ALL ORDERS
+# FIND AN ORDER BY ID OR RETURN ALL ORDERS
 ######################################################################
 @app.route("/orders", methods=["GET"])
 def list_orders():
@@ -57,7 +57,7 @@ def list_orders():
     app.logger.info("Request for Order list")
     orders = []
 
-    print("request.args = {}".format(request.args.to_dict(flat=False)))
+    # print("request.args = {}".format(request.args.to_dict(flat=False)))
 
     # Process the query string if any
 
@@ -98,6 +98,7 @@ def create_orders():
     # Create a message to return
     message = order.serialize()
     location_url = url_for("create_orders", order_id=order.id, _external=True)
+    # print(location_url)
 
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}

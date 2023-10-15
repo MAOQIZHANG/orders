@@ -243,7 +243,7 @@ class TestOrder(unittest.TestCase):
         # Fetch it back
         order = Order.find(order.id)
         old_item = order.items[0]
-        print("%r", old_item)
+        # print("%r", old_item)
         self.assertEqual(old_item.title, item.title)
         # Change the city
         old_item.title = "XX"
