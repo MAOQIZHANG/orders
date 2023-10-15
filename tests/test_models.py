@@ -78,6 +78,17 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 1)
 
+    # def test_add_an_item(self):
+    #     """It should Create an item and add it to the database"""
+    #     items = Item.all()
+    #     self.assertEqual(items, [])
+    #     item = ItemFactory()
+    #     item.create()
+    #     # Assert that it was assigned an id and shows up in the database
+    #     self.assertIsNotNone(item.id)
+    #     items = Item.all()
+    #     self.assertEqual(len(items), 1)
+
     def test_read_order(self):
         """It should Read an order"""
         order = OrderFactory()
@@ -243,7 +254,7 @@ class TestOrder(unittest.TestCase):
         # Fetch it back
         order = Order.find(order.id)
         old_item = order.items[0]
-        print("%r", old_item)
+        # print("%r", old_item)
         self.assertEqual(old_item.title, item.title)
         # Change the city
         old_item.title = "XX"
