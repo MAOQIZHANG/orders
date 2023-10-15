@@ -49,6 +49,28 @@ def check_content_type(media_type):
 #  R E S T   A P I   E N D P O I N T S
 ######################################################################
 ######################################################################
+# LIST ALL ACCOUNTS
+######################################################################
+@app.route("/orders", methods=["GET"])
+def list_orders():
+    """Returns all of the Orders"""
+    app.logger.info("Request for Order list")
+    orders = []
+
+    # Process the query string if any
+    name = request.args.get("name")
+    if name:
+        orders = Order.find_by_name(name)
+    else:
+        orders = Order.all()
+
+    # Return as an array of dictionaries
+    results = [order.serialize() for order in orders]
+
+    return make_response(jsonify(results), status.HTTP_200_OK)
+
+
+######################################################################
 # CREATE A NEW ACCOUNT
 ######################################################################
 @app.route("/orders", methods=["POST"])

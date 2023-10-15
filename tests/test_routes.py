@@ -80,6 +80,14 @@ class TestOrderService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+    def test_get_order_list(self):
+        """It should Get a list of Accounts"""
+        self._create_orders(5)
+        resp = self.client.get(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
+
     def test_create_order(self):
         """It should Create a new Order"""
         order = OrderFactory()
@@ -95,6 +103,7 @@ class TestOrderService(TestCase):
 
         # Check the data is correct
         new_order = resp.get_json()
+        print(new_order)
         self.assertEqual(new_order["name"], order.name, "Names does not match")
         self.assertEqual(
             datetime.fromisoformat(new_order["create_time"]),
@@ -110,9 +119,11 @@ class TestOrderService(TestCase):
         )
 
         # Check that the location header was correct by getting it
-        resp = self.client.get(location, content_type="application/json")
+        # resp = self.client.get(location, content_type="application/json")
+        resp = self.client.get(location)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         new_order = resp.get_json()
+        print(new_order)
         self.assertEqual(new_order["name"], order.name, "Names does not match")
         self.assertEqual(
             datetime.fromisoformat(new_order["create_time"]),
