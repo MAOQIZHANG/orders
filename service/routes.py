@@ -51,7 +51,31 @@ def check_content_type(media_type):
 ######################################################################
 # FIND AN ORDER BY ID OR RETURN ALL ORDERS
 ######################################################################
-# TODO: implement this to make the testing for create an order work.
+@app.route("/orders", methods=["GET"])
+def list_orders():
+    """Find an order by ID or Returns all of the Orders"""
+    app.logger.info("Request for Order list")
+    orders = []
+
+    # print("request.args = {}".format(request.args.to_dict(flat=False)))
+
+    # Process the query string if any
+
+    if len(request.args) == 0:  # This corresponds to "/orders"
+        orders = Order.all()
+
+        # Return as an array of dictionaries
+        results = [order.serialize() for order in orders]
+
+    elif "order_id" in request.args:
+        order_id = request.args.get("order_id")
+        order = Order.find(order_id)
+        results = order.serialize()
+
+    else:
+        return make_response(jsonify(None), status.HTTP_404_NOT_FOUND)
+
+    return make_response(jsonify(results), status.HTTP_200_OK)
 
 
 ######################################################################
