@@ -80,24 +80,6 @@ class TestOrderService(TestCase):
         resp = self.client.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
-    # def test_get_order_list(self):
-    #     """It should Get a list of Orders"""
-    #     self._create_orders(5)
-    #     resp = self.client.get(BASE_URL)
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     data = resp.get_json()
-    #     self.assertEqual(len(data), 5)
-
-    # def test_get_order_by_name(self):
-    #     """It should Get an Order by ID"""
-    #     orders = self._create_orders(3)
-    #     resp = self.client.get(BASE_URL, query_string=f"order_id={orders[1].id}")
-    #     # print(orders[1].id)
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     data = resp.get_json()
-    #     # print(data)
-    #     self.assertEqual(data["id"], orders[1].id, "Id does not match")
-
     def test_create_order(self):
         """It should Create a new Order"""
         order = OrderFactory()

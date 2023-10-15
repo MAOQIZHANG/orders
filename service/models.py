@@ -64,6 +64,7 @@ class Item(db.Model):
         logger.info("Creating %s", self.title)
         self.id = None  # pylint: disable=invalid-title
         db.session.add(self)
+        # print("william")
         db.session.commit()
 
     def update(self):
