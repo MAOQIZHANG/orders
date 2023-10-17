@@ -3,10 +3,10 @@ My Service
 
 Describe what your service does here
 """
-
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
+from datetime import datetime, timezone, timedelta
 
 # Import Flask application
 from . import app
@@ -102,4 +102,42 @@ def create_orders():
 
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
+
+######################################################################
+# UPDATE AN ORDER
+######################################################################
+
+@app.route("/orders/<int:order_id>", methods=["PUT"])
+def update_an_order(order_id):
+    """
+    Update information (e.g., address, name) within 24 hours of placing the order.
+    """
+    app.logger.info(f"Update order information with ID {order_id}")
+
+    # Find the order by ID
+    order = Order.find(order_id)
+    order.create_time = datetime.now(timezone.utc)
+
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, "Order not found")
+    
+    # Calcultate the time difference
+    time_difference = datetime.now(timezone.utc) - order.create_time
+
+    # Cannot update information on an order placed over 24 hours
+    if time_difference > timedelta(hours = 24):
+        return make_response("Cannot update order", status.HTTP_400_BAD_REQUEST)
+    
+    # Update the 'name' and 'address' fields of the order
+    data = request.get_json()
+    if "name" in data:
+        order.name = data["name"]
+    if "address" in data:
+        order.address = data["address"]
+
+    order.update()
+
+    return make_response(
+        jsonify(order.serialize()), status.HTTP_200_OK, {"Updated_order_id": order_id}
     )
