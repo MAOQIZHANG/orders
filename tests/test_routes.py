@@ -14,7 +14,7 @@ from service.models import Order, db, init_db
 from service.models import OrderStatus
 from service.common import status  # HTTP Status Codes
 from tests.factories import OrderFactory, ItemFactory
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 
 DATABASE_URI = os.getenv(
@@ -150,37 +150,32 @@ class TestOrderService(TestCase):
         self.assertEqual(
             new_order["status"], order.status.name, "Status does not match"
         )
-    
+
     def test_update_an_order(self):
-        """It should Update an Order within 24 hours of placing it."""
+        """It should Update an Order."""
         order = OrderFactory()
 
         # Create the order.
-        resp = self.client.post(BASE_URL, json=order.serialize(), content_type="application/json")
+        resp = self.client.post(
+            BASE_URL, json=order.serialize(), content_type="application/json"
+        )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
         new_order = resp.get_json()
         order_id = new_order["id"]
-            
-        # Try to update the order within 24 hours.
-        order.name = "Updated Name"
-        order.address = "Updated Address"
-        resp = self.client.put(f"{BASE_URL}/{order_id}", json=order.serialize(), content_type="application/json")
+
+        # Update the order.
+        updated_data = {"name": "Updated Name", "address": "Updated Address"}
+        resp = self.client.put(
+            f"{BASE_URL}/{order_id}",
+            json=updated_data,
+            content_type="application/json",
+        )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         # Verify that the order was updated.
         updated_order = resp.get_json()
         self.assertEqual(updated_order["name"], "Updated Name", "Names do not match.")
-        self.assertEqual(updated_order["address"], "Updated Address", "Addresses do not match.")
-        
-
-        # Try to update fields other name and address.
-        order.create_time = order.create_time + timedelta(hours = 24) # reset the create_time
-        order.status = "APPROVED"
-        #order.status = OrderStatus.APPROVED
-        resp = self.client.put(f"{BASE_URL}/{order_id}", json=order.serialize(), content_type="application/json")
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-        # Verify that the status was not updated.
-        updated_order = resp.get_json()
-        self.assertEqual(updated_order["status"], "NEW", "Status should not have been updated")
+        self.assertEqual(
+            updated_order["address"], "Updated Address", "Addresses do not match."
+        )

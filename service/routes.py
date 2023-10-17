@@ -104,31 +104,25 @@ def create_orders():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # UPDATE AN ORDER
 ######################################################################
 
+
 @app.route("/orders/<int:order_id>", methods=["PUT"])
 def update_an_order(order_id):
     """
-    Update information (e.g., address, name) within 24 hours of placing the order.
+    Update information (e.g., address, name) for an order.
     """
     app.logger.info(f"Update order information with ID {order_id}")
 
     # Find the order by ID
     order = Order.find(order_id)
-    order.create_time = datetime.now(timezone.utc)
 
     if not order:
         abort(status.HTTP_404_NOT_FOUND, "Order not found")
-    
-    # Calcultate the time difference
-    time_difference = datetime.now(timezone.utc) - order.create_time
 
-    # Cannot update information on an order placed over 24 hours
-    if time_difference > timedelta(hours = 24):
-        return make_response("Cannot update order", status.HTTP_400_BAD_REQUEST)
-    
     # Update the 'name' and 'address' fields of the order
     data = request.get_json()
     if "name" in data:
