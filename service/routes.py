@@ -228,6 +228,7 @@ def list_one_item_in_one_order(order_id, item_id):
     )
     # Process the query string if any
 
+
 ######################################################################
 # UPDATE AN ORDER
 ######################################################################
@@ -259,3 +260,28 @@ def update_an_order(order_id):
         jsonify(order.serialize()), status.HTTP_200_OK, {"Updated_order_id": order_id}
     )
 
+
+######################################################################
+# DELETE AN ORDER
+######################################################################
+
+
+@app.route("/orders/<int:order_id>", methods=["DELETE"])
+def delete_an_order(order_id):
+    """
+    Delete an order by order ID.
+    """
+    app.logger.info(f"Delete an order with order ID {order_id}")
+
+    order = Order.find(order_id)
+
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, "Order not found")
+
+    order.delete()
+
+    return make_response(
+        "",
+        status.HTTP_204_NO_CONTENT,
+        {"Deleted_order_id": order_id},
+    )
