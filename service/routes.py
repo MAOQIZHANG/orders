@@ -106,6 +106,129 @@ def create_orders():
 
 
 ######################################################################
+# CREATE A NEW ITEM IN ORDER
+######################################################################
+@app.route("/orders/<order_id>/items", methods=["POST"])
+def create_item_in_an_order(order_id):
+    """
+    Create an item on an order
+
+    This endpoint will add a new item to an order.
+    """
+    app.logger.info("Request to create an Item for Order with id: %s", order_id)
+    order = Order.find(order_id)
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
+
+    item = Item()
+    item.deserialize(request.get_json())
+    item.order_id = order_id
+    item.amount = 1
+    item.status = "Added to order"
+    item.create()
+
+    # order.items.append(item)
+    # order.update()
+    item.order_id = order_id
+    item.update()
+
+    message = item.serialize()
+    location_url = url_for(
+        "create_item_in_an_order", order_id=order_id, item_id=item.id, _external=True
+    )
+    # print(location_url)
+    app.logger.info("Item with ID [%s] created for order: [%s].", item.id, order.id)
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
+
+
+######################################################################
+# UPDATE ITEM BY item id IN ORDER
+######################################################################
+@app.route("/orders/<order_id>/items/<item_id>", methods=["PUT"])
+def update_item_by_id_to_order(order_id, item_id):
+    """
+    Adds an item by item ID to an existing order
+    This endpoint will add an item (specified by item_id) to the specified order
+    """
+    app.logger.info(f"Request to add item with ID {item_id} to Order {order_id}")
+    check_content_type("application/json")
+
+    # Check if the order exists
+    order = Order.find(order_id)
+    if order is None:
+        # Handle the case when the order does not exist
+        return make_response(
+            jsonify(error="Order not found"), status.HTTP_404_NOT_FOUND
+        )
+
+    # Check if the item exists
+    item = Item.find(item_id)
+    if item is None:
+        # Handle the case when the order does not exist
+        return make_response(jsonify(error="Item not found"), status.HTTP_404_NOT_FOUND)
+
+    amount = request.args.get("amount", type=int)
+    if amount is not None:
+        # Update the item amount using the 'amount' query parameter
+        original_amount = item.amount
+        item.amount = amount
+        order.cost_amount += (amount - original_amount) * item.price
+    else:
+        # Increment the item amount by 1
+        item.amount += 1
+        item.update()
+        order.cost_amount += item.price
+
+    order.update()
+
+    location_url = url_for(
+        "update_item_by_id_to_order", order_id=order_id, item_id=item_id, _external=True
+    )
+
+    return make_response(
+        jsonify(order=order.serialize(), item=item.serialize()),
+        status.HTTP_202_ACCEPTED,
+        {"Location": location_url},
+    )
+
+
+######################################################################
+# List all items in an order
+######################################################################
+@app.route("/orders/<order_id>/items", methods=["GET"])
+def list_items_in_one_order(order_id):
+    app.logger.info("Request for Item list in one order")
+    # order_id = request.args.get("order_id")
+    order = Order.find(order_id)
+    order = order.serialize()
+    results = order["items"]
+    # Process the query string if any
+    return make_response(
+        jsonify(order_id=int(order_id), items=results), status.HTTP_200_OK
+    )
+
+
+######################################################################
+# List one item in an order
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["GET"])
+def list_one_item_in_one_order(order_id, item_id):
+    app.logger.info("Request for Item list in one order")
+    # order_id = request.args.get("order_id")
+    order = Order.find(order_id)
+    order = order.serialize()
+    results = order["items"]
+    for item in results:
+        if item["id"] == item_id:
+            return make_response(jsonify(item), status.HTTP_200_OK)
+    return make_response(
+        jsonify(error="Item not in Order"), status.HTTP_400_BAD_REQUEST
+    )
+    # Process the query string if any
+
+######################################################################
 # UPDATE AN ORDER
 ######################################################################
 
@@ -135,3 +258,4 @@ def update_an_order(order_id):
     return make_response(
         jsonify(order.serialize()), status.HTTP_200_OK, {"Updated_order_id": order_id}
     )
+
