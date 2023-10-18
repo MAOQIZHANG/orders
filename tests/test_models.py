@@ -29,6 +29,7 @@ class TestOrder(unittest.TestCase):
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         Order.init_db(app)
+        Item.init_db(app)
 
     @classmethod
     def tearDownClass(cls):
@@ -78,16 +79,16 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 1)
 
-    # def test_add_an_item(self):
-    #     """It should Create an item and add it to the database"""
-    #     items = Item.all()
-    #     self.assertEqual(items, [])
-    #     item = ItemFactory()
-    #     item.create()
-    #     # Assert that it was assigned an id and shows up in the database
-    #     self.assertIsNotNone(item.id)
-    #     items = Item.all()
-    #     self.assertEqual(len(items), 1)
+    def test_add_an_item(self):
+        """It should Create an item and add it to the database"""
+        items = Item.all()
+        self.assertEqual(items, [])
+        item = ItemFactory()
+        item.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(item.id)
+        items = Item.all()
+        self.assertEqual(len(items), 1)
 
     def test_read_order(self):
         """It should Read an order"""
@@ -145,7 +146,7 @@ class TestOrder(unittest.TestCase):
         orders = Order.all()
         self.assertEqual(len(orders), 5)
 
-    def test_find_by_name(self):
+    def test_find_order_by_name(self):
         """It should Find an Order by name"""
         order = OrderFactory()
         order.create()
@@ -154,6 +155,16 @@ class TestOrder(unittest.TestCase):
         same_order = Order.find_by_name(order.name)[0]
         self.assertEqual(same_order.id, order.id)
         self.assertEqual(same_order.name, order.name)
+
+    def test_find_item_by_name(self):
+        """It should Find an Item by title"""
+        item = ItemFactory()
+        item.create()
+
+        # Fetch it back by name
+        same_item = Item.find_by_title(item.title)[0]
+        self.assertEqual(same_item.id, item.id)
+        self.assertEqual(same_item.title, item.title)
 
     def test_serialize_an_order(self):
         """It should Serialize an order"""
