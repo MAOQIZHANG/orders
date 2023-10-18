@@ -408,3 +408,49 @@ class TestOrderService(TestCase):
         self.assertEqual(
             updated_order["address"], "Updated Address", "Addresses do not match."
         )
+
+        # Choose an order ID that does not exist in your database.
+        nonexistent_order_id = 9999  # Replace with an ID that doesn't exist.
+
+        # Attempt to update the nonexistent order.
+        updated_data = {"name": "Updated Name", "address": "Updated Address"}
+        resp = self.client.put(
+            f"{BASE_URL}/{nonexistent_order_id}",
+            json=updated_data,
+            content_type="application/json",
+        )
+
+        # Verify that the response is a 404 error.
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_an_order(self):
+        """It should delete an Order."""
+        order = OrderFactory()
+
+        # Create the order.
+        resp = self.client.post(
+            BASE_URL, json=order.serialize(), content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        new_order = resp.get_json()
+        order_id = new_order["id"]
+
+        # Delete the order.
+        resp = self.client.delete(
+            f"{BASE_URL}/{order_id}", content_type="application/json"
+        )
+
+        # Verify that the order was deleted successfully.
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Choose an order ID that does not exist in your database.
+        nonexistent_order_id = 9999  # Replace with an ID that doesn't exist.
+
+        # Attempt to delete the nonexistent order.
+        resp = self.client.delete(
+            f"{BASE_URL}/{nonexistent_order_id}", content_type="application/json"
+        )
+
+        # Verify that the response is a 404 error.
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
