@@ -11,8 +11,11 @@ from unittest import TestCase
 from service import app
 from datetime import datetime
 from service.models import Order, db, init_db
+from service.models import OrderStatus
 from service.common import status  # HTTP Status Codes
 from tests.factories import OrderFactory, ItemFactory
+from datetime import datetime, timedelta, timezone
+
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -178,6 +181,7 @@ class TestOrderService(TestCase):
             new_order["status"], order.status.name, "Status does not match"
         )
 
+        
     def test_create_item_in_order(self):
         """It should create an item in an order"""
         # Create a test order and item
@@ -343,4 +347,33 @@ class TestOrderService(TestCase):
         # Verify that items are listed only if the order exists
         self.assertEqual(
             resp.status_code, status.HTTP_400_BAD_REQUEST, "Item not in Order"
+
+          
+    def test_update_an_order(self):
+        """It should Update an Order."""
+        order = OrderFactory()
+
+        # Create the order.
+        resp = self.client.post(
+            BASE_URL, json=order.serialize(), content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        new_order = resp.get_json()
+        order_id = new_order["id"]
+
+        # Update the order.
+        updated_data = {"name": "Updated Name", "address": "Updated Address"}
+        resp = self.client.put(
+            f"{BASE_URL}/{order_id}",
+            json=updated_data,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        # Verify that the order was updated.
+        updated_order = resp.get_json()
+        self.assertEqual(updated_order["name"], "Updated Name", "Names do not match.")
+        self.assertEqual(
+            updated_order["address"], "Updated Address", "Addresses do not match."
         )

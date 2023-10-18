@@ -3,10 +3,10 @@ My Service
 
 Describe what your service does here
 """
-
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
+from datetime import datetime, timezone, timedelta
 
 # Import Flask application
 from . import app
@@ -227,3 +227,35 @@ def list_one_item_in_one_order(order_id, item_id):
         jsonify(error="Item not in Order"), status.HTTP_400_BAD_REQUEST
     )
     # Process the query string if any
+
+######################################################################
+# UPDATE AN ORDER
+######################################################################
+
+
+@app.route("/orders/<int:order_id>", methods=["PUT"])
+def update_an_order(order_id):
+    """
+    Update information (e.g., address, name) for an order.
+    """
+    app.logger.info(f"Update order information with ID {order_id}")
+
+    # Find the order by ID
+    order = Order.find(order_id)
+
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, "Order not found")
+
+    # Update the 'name' and 'address' fields of the order
+    data = request.get_json()
+    if "name" in data:
+        order.name = data["name"]
+    if "address" in data:
+        order.address = data["address"]
+
+    order.update()
+
+    return make_response(
+        jsonify(order.serialize()), status.HTTP_200_OK, {"Updated_order_id": order_id}
+    )
+
