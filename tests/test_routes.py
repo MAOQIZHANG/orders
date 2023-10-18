@@ -349,7 +349,7 @@ class TestOrderService(TestCase):
         )
 
     def test_delete_one_item_in_one_order(self):
-        """It should list one item in one order."""
+        """It should delete one item in one order."""
         # Create an order with items
         order = self._create_orders(1)[0]
         item = self._create_items_in_existing_order(order.id, 3)[0]
