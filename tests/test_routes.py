@@ -181,7 +181,6 @@ class TestOrderService(TestCase):
             new_order["status"], order.status.name, "Status does not match"
         )
 
-        
     def test_create_item_in_order(self):
         """It should create an item in an order"""
         # Create a test order and item
@@ -347,8 +346,8 @@ class TestOrderService(TestCase):
         # Verify that items are listed only if the order exists
         self.assertEqual(
             resp.status_code, status.HTTP_400_BAD_REQUEST, "Item not in Order"
+        )
 
-          
     def test_update_an_order(self):
         """It should Update an Order."""
         order = OrderFactory()
