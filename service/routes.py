@@ -2,6 +2,19 @@
 My Service
 
 Describe what your service does here
+Paths:
+------
+GET /orders - Returns a list all of the Orders
+GET /orders/{id} - Returns the Order with a given id number
+POST /orders - creates a new Order record in the database
+PUT /orders/{id} - updates an Order record in the database
+DELETE /orders/{id} - deletes an Order record in the database
+
+GET /orders/{order_id}/items - Returns a list all of the Items of the given Order id
+GET /orders/{order_id}/items/{item_id} - Returns the Order Item with a given id number
+POST /orders/{order_id}/items - creates a new Order Item record in the database
+PUT /orders/{order_id}/items/{item_id} - updates an Order Item record in the database
+DELETE /orders/{order_id}/items/{item_id} - deletes an Order Item record in the database
 """
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
@@ -230,10 +243,33 @@ def list_one_item_in_one_order(order_id, item_id):
 
 
 ######################################################################
+# List one item in an order
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_one_item_in_one_order(order_id, item_id):
+    app.logger.info("Request for Item list in one order")
+    # order_id = request.args.get("order_id")
+    order = Order.find(order_id)
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, f"Order not found")
+
+    order = order.serialize()
+    item = Item.find(item_id)
+    if (item is not None) and (item.order_id == order_id):
+        item.delete()
+        app.logger.info(
+            "Item with ID [%s] and order ID [%s] delete complete.", item_id, order_id
+        )
+        return make_response("", status.HTTP_204_NO_CONTENT)
+
+    return make_response(
+        jsonify(error="Item not in Order"), status.HTTP_400_BAD_REQUEST
+    )
+
+
+######################################################################
 # UPDATE AN ORDER
 ######################################################################
-
-
 @app.route("/orders/<int:order_id>", methods=["PUT"])
 def update_an_order(order_id):
     """
@@ -264,8 +300,6 @@ def update_an_order(order_id):
 ######################################################################
 # DELETE AN ORDER
 ######################################################################
-
-
 @app.route("/orders/<int:order_id>", methods=["DELETE"])
 def delete_an_order(order_id):
     """

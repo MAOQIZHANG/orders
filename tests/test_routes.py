@@ -317,7 +317,7 @@ class TestOrderService(TestCase):
         # Verify that items are listed only if the order exists
         self.assertEqual(len(data["items"]), 3)
 
-    def test_one_item_in_one_order(self):
+    def test_list_one_item_in_one_order(self):
         """It should list one item in one order."""
         # Create an order with items
         order = self._create_orders(1)[0]
@@ -339,6 +339,38 @@ class TestOrderService(TestCase):
 
         non_exist_item_id = 999
         resp = self.client.get(
+            f"/orders/{order.id}/items/{non_exist_item_id}",
+            content_type="application/json",
+        )
+
+        # Verify that items are listed only if the order exists
+        self.assertEqual(
+            resp.status_code, status.HTTP_400_BAD_REQUEST, "Item not in Order"
+        )
+
+    def test_delete_one_item_in_one_order(self):
+        """It should delete one item in one order."""
+        # Create an order with items
+        order = self._create_orders(1)[0]
+        item = self._create_items_in_existing_order(order.id, 3)[0]
+
+        resp = self.client.delete(
+            f"/orders/{order.id}/items/{item.id}",
+            content_type="application/json",
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+        non_exist_order_id = 999
+        resp = self.client.delete(
+            f"/orders/{non_exist_order_id}/items/{item.id}",
+            content_type="application/json",
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND, "Order not found")
+
+        non_exist_item_id = 999
+        resp = self.client.delete(
             f"/orders/{order.id}/items/{non_exist_item_id}",
             content_type="application/json",
         )
