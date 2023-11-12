@@ -58,11 +58,14 @@ class TestOrderService(TestCase):
     #  H E L P E R   M E T H O D S
     ######################################################################
 
-    def _create_orders(self, count):
+    def _create_orders(self, count, user_id=None):
         """Factory method to create orders in bulk"""
         orders = []
         for _ in range(count):
-            order = OrderFactory()
+            if user_id:
+                order = OrderFactory(user_id=user_id)
+            else:
+                order = OrderFactory()
             resp = self.client.post(BASE_URL, json=order.serialize())
             self.assertEqual(
                 resp.status_code,
@@ -131,6 +134,54 @@ class TestOrderService(TestCase):
         # print(data)
         self.assertEqual(data["id"], orders[1].id, "Id does not match")
 
+    def test_get_order_by_id_with_user_id(self):
+        """It should get an Order by ID only when the user of the specified
+        user ID has the Order"""
+        user1_id = 1000
+        user_na_id = 1001
+        user1_orders = self._create_orders(1, user_id=user1_id)
+        order_id = user1_orders[0]["id"]
+
+        # Subtest #1: Check when the user ID matches with the order ID.
+        resp = self.client.get(
+            BASE_URL, query_string=f"user_id={user1_id}&order_id={order_id}"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(order_id, data[0]["id"])
+
+        # Subtest #2: Check when the user ID does not match the order ID.
+        resp = self.client.get(
+            BASE_URL, query_string=f"user_id={user_na_id}&order_id={order_id}"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
+
+    def test_get_order_by_user_id(self):
+        """It should get all Orders belonging to a user whose user ID is specified"""
+        user1_id = 1000
+        user2_id = 1001
+        user_na_id = 1002
+        user1_orders = self._create_orders(3, user_id=user1_id)
+        self._create_orders(4, user_id=user2_id)
+
+        # Subtest #1: Check all orders of a user is returned.
+        resp = self.client.get(BASE_URL, query_string=f"user_id={user1_id}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(user1_orders))
+        expect_ids = [order["id"] for order in user1_orders]
+        for ret_order in data:
+            self.assertTrue(ret_order["id"] in expect_ids)
+
+        # Subtest #2: Check an empty list is returned when a non-existent user ID is supplied.
+        resp = self.client.get(BASE_URL, query_string=f"user_id={user_na_id}")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 0)
+
     def test_read_an_order(self):
         orders = self._create_orders(3)
         resp = self.client.get(f"orders/{orders[0].id}")
@@ -169,6 +220,7 @@ class TestOrderService(TestCase):
             BASE_URL, json=order.serialize(), content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        print(order.serialize())
 
         # Make sure location header is set
         location = resp.headers.get("Location", None)
