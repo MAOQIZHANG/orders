@@ -171,8 +171,8 @@ class Order(db.Model):
     status = db.Column(
         db.Enum(OrderStatus), nullable=False, server_default=(OrderStatus.NEW.name)
     )
-    items = db.relationship("Item", backref="order", lazy=True, passive_deletes=True)
     user_id = db.Column(db.Integer, nullable=False)
+    items = db.relationship("Item", backref="order", lazy=True, passive_deletes=True)
 
     def __repr__(self):
         return f"<Order {self.name} id=[{self.id}]>"
