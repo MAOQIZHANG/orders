@@ -51,8 +51,12 @@ class Item(db.Model):
     title = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
-    product_id = db.Column(db.String(255), nullable=False)
-    status = db.Column(db.String(50), nullable=False)
+    product_id = db.Column(
+        db.String(255), nullable=False
+    )  # This is the product serial number, different from database ID.
+    status = db.Column(
+        db.String(50), nullable=False
+    )  # TODO: Change to enum type for robustness.
 
     def __repr__(self):
         return f"<Item {self.title} id=[{self.id}]>"
@@ -158,13 +162,16 @@ class Order(db.Model):
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63))
+    name = db.Column(
+        db.String(63)
+    )  # The name of the recipient of this order, might be different from the user who created this order.
     create_time = db.Column(db.DateTime(timezone=True), default=datetime.utcnow)
     address = db.Column(db.String(255), nullable=False)
     cost_amount = db.Column(db.Float, nullable=False)
     status = db.Column(
         db.Enum(OrderStatus), nullable=False, server_default=(OrderStatus.NEW.name)
     )
+    user_id = db.Column(db.Integer, nullable=False)
     items = db.relationship("Item", backref="order", lazy=True, passive_deletes=True)
 
     def __repr__(self):
@@ -201,6 +208,7 @@ class Order(db.Model):
             "address": self.address,
             "cost_amount": self.cost_amount,
             "status": self.status.name,
+            "user_id": self.user_id,
             "items": [],
         }
 
@@ -222,6 +230,7 @@ class Order(db.Model):
             self.address = data["address"]
             self.cost_amount = data["cost_amount"]
             self.status = getattr(OrderStatus, data["status"])
+            self.user_id = data["user_id"]
             item_list = data["items"]
 
             for json_item in item_list:
@@ -271,3 +280,7 @@ class Order(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
+
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        return cls.query.filter(cls.user_id == user_id)

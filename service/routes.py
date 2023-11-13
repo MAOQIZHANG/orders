@@ -68,25 +68,46 @@ def check_content_type(media_type):
 def list_orders():
     """Find an order by ID or Returns all of the Orders"""
     app.logger.info("Request for Order list")
-    orders = []
+    print("request.args = {}".format(request.args.to_dict(flat=False)))
 
-    # print("request.args = {}".format(request.args.to_dict(flat=False)))
+    orders = []  # A list of all orders satisfying requirements
 
     # Process the query string if any
+    # Supported formats:
+    # - All orders: "?"
+    # - A particular order:
+    #       "?order_id={some integer}" or
+    #       "?order_id={some integer}&user_id={user id having this order}"
+    # - All orders of a particular user ID: "?user_id={some integer}"
 
-    if len(request.args) == 0:  # This corresponds to "/orders"
+    # This corresponds to "?"
+    if len(request.args) == 0:
         orders = Order.all()
 
-        # Return as an array of dictionaries
-        results = [order.serialize() for order in orders]
-
-    elif "order_id" in request.args:
+    # This corresponds to "?order_id={some integer}"
+    elif "order_id" in request.args and len(request.args) == 1:
         order_id = request.args.get("order_id")
-        order = Order.find(order_id)
-        results = order.serialize()
+        orders.append(Order.find(order_id))
 
-    else:
-        abort(status.HTTP_404_NOT_FOUND)
+    # This corresponds to "?order_id={some integer}&user_id={user id having this order}"
+    elif (
+        "order_id" in request.args
+        and "user_id" in request.args
+        and len(request.args) == 2
+    ):
+        order_id = request.args.get("order_id")
+        user_id = request.args.get("user_id")
+        order = Order.find(order_id)
+        if int(user_id) == order.user_id:
+            orders.append(order)
+
+    # This corresponds to "?user_id={some integer}"
+    elif "user_id" in request.args and len(request.args) == 1:
+        user_id = request.args.get("user_id")
+        orders = Order.find_by_user_id(user_id)
+
+    # Return as an array of dictionaries
+    results = [order.serialize() for order in orders]
 
     return make_response(jsonify(results), status.HTTP_200_OK)
 

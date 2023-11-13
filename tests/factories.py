@@ -45,6 +45,8 @@ class OrderFactory(factory.Factory):
             OrderStatus.CANCELED,
         ]
     )
+    user_id = FuzzyInteger(1000, 9999)
+
     # the many side of relationships can be a little wonky in factory boy:
     # https://factoryboy.readthedocs.io/en/latest/recipes.html#simple-many-to-many-relationship
 

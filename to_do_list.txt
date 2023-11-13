@@ -1,0 +1,2 @@
+[ ] Use enum type for Item.status instead of arbitrary string.
+[ ] Investigate what OrderFactory.create() is.
