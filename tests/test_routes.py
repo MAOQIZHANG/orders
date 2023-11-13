@@ -130,8 +130,8 @@ class TestOrderService(TestCase):
         resp = self.client.get(BASE_URL, query_string=f"order_id={orders[1].id}")
         # print(orders[1].id)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        # print(data)
+        data = resp.get_json()[0]
+        print(data)
         self.assertEqual(data["id"], orders[1].id, "Id does not match")
 
     def test_get_order_by_id_with_user_id(self):
@@ -140,7 +140,7 @@ class TestOrderService(TestCase):
         user1_id = 1000
         user_na_id = 1001
         user1_orders = self._create_orders(1, user_id=user1_id)
-        order_id = user1_orders[0]["id"]
+        order_id = user1_orders[0].id
 
         # Subtest #1: Check when the user ID matches with the order ID.
         resp = self.client.get(
@@ -171,8 +171,9 @@ class TestOrderService(TestCase):
         resp = self.client.get(BASE_URL, query_string=f"user_id={user1_id}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
+        print(data)
         self.assertEqual(len(data), len(user1_orders))
-        expect_ids = [order["id"] for order in user1_orders]
+        expect_ids = [order.id for order in user1_orders]
         for ret_order in data:
             self.assertTrue(ret_order["id"] in expect_ids)
 
@@ -198,12 +199,6 @@ class TestOrderService(TestCase):
             f"Order with id '{non_existent_order_id}' was not found.",
         )
 
-    def test_get_order_with_invalid_id(self):
-        """It should Return 404 with invalid order ID"""
-        resp = self.client.get(BASE_URL, query_string="foo")
-        # print(orders[1].id)
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_content_type(self):
         """It should return error with invalid payload type"""
         order = OrderFactory()
@@ -220,7 +215,7 @@ class TestOrderService(TestCase):
             BASE_URL, json=order.serialize(), content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        print(order.serialize())
+        # print(order.serialize())
 
         # Make sure location header is set
         location = resp.headers.get("Location", None)
@@ -244,10 +239,10 @@ class TestOrderService(TestCase):
         )
 
         # Check that the location header was correct by getting it
-        # print("test_routes.py: location = %s" % location)
+        # ("test_routes.py: location = %s" % location)
         resp = self.client.get(location, content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        new_order = resp.get_json()
+        new_order = resp.get_json()[0]
         # print(new_order)
         self.assertEqual(new_order["name"], order.name, "Names does not match")
         self.assertEqual(

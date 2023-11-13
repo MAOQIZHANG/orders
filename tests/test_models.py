@@ -105,7 +105,7 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(found_order.cost_amount, order.cost_amount)
         self.assertEqual(found_order.status, order.status)
         self.assertEqual(found_order.items, [])
-        # self.assertEqual(found_order.user_id, order.user_id)
+        self.assertEqual(found_order.user_id, order.user_id)
 
     def test_update_order(self):
         """It should Update an order"""
@@ -185,7 +185,7 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(serial_order["cost_amount"], order.cost_amount)
         self.assertEqual(serial_order["status"], order.status.name)
         self.assertEqual(len(serial_order["items"]), 1)
-        # self.assertEqual(serial_order["user_id"], order.user_id)
+        self.assertEqual(serial_order["user_id"], order.user_id)
         items = serial_order["items"]
         self.assertEqual(items[0]["id"], item.id)
         self.assertEqual(items[0]["order_id"], item.order_id)
@@ -208,7 +208,7 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(new_order.address, order.address)
         self.assertEqual(new_order.cost_amount, order.cost_amount)
         self.assertEqual(new_order.status, order.status)
-        # self.assertEqual(new_order.user_id, order.user_id)
+        self.assertEqual(new_order.user_id, order.user_id)
 
     def test_deserialize_with_key_error(self):
         """It should not Deserialize an order with a KeyError"""

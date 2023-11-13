@@ -280,3 +280,7 @@ class Order(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
+
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        return cls.query.filter(cls.user_id == user_id)

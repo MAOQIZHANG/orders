@@ -68,7 +68,7 @@ def check_content_type(media_type):
 def list_orders():
     """Find an order by ID or Returns all of the Orders"""
     app.logger.info("Request for Order list")
-    app.logger.debug("request.args = {}".format(request.args.to_dict(flat=False)))
+    print("request.args = {}".format(request.args.to_dict(flat=False)))
 
     orders = []  # A list of all orders satisfying requirements
 
@@ -98,8 +98,13 @@ def list_orders():
         order_id = request.args.get("order_id")
         user_id = request.args.get("user_id")
         order = Order.find(order_id)
-        if user_id == order.user_id:
+        if int(user_id) == order.user_id:
             orders.append(order)
+
+    # This corresponds to "?user_id={some integer}"
+    elif "user_id" in request.args and len(request.args) == 1:
+        user_id = request.args.get("user_id")
+        orders = Order.find_by_user_id(user_id)
 
     # Return as an array of dictionaries
     results = [order.serialize() for order in orders]
