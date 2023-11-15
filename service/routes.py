@@ -125,6 +125,26 @@ def read_an_order(order_id):
         abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
 
 
+@app.route("/orders/orders_by_status", methods=["GET"])
+def list_orders_by_status():
+    """List orders filtered by status and optionally by user_id."""
+    status_param = request.args.get("status")
+    user_id = request.args.get("user_id")
+
+    if status_param and user_id:
+        # Filter orders by the specified status and user_id
+        orders = Order.query.filter_by(status=status_param, user_id=user_id).all()
+    elif status_param:
+        # Filter orders by the specified status
+        orders = Order.query.filter_by(status=status_param).all()
+    else:
+        # If no status is specified, return all orders
+        orders = Order.query.all()
+
+    results = [order.serialize() for order in orders]
+    return jsonify(results), 200
+
+
 ######################################################################
 # CREATE A NEW ORDER
 ######################################################################
