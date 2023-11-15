@@ -7,8 +7,6 @@ import logging
 from datetime import datetime
 from enum import Enum
 from flask_sqlalchemy import SQLAlchemy
-import datetime
-
 
 
 logger = logging.getLogger("flask.app")
