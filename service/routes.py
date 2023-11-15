@@ -19,7 +19,6 @@ DELETE /orders/{order_id}/items/{item_id} - deletes an Order Item record in the 
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
-from datetime import datetime, timezone, timedelta
 
 # Import Flask application
 from . import app
@@ -68,7 +67,7 @@ def check_content_type(media_type):
 def list_orders():
     """Find an order by ID or Returns all of the Orders"""
     app.logger.info("Request for Order list")
-    print("request.args = {}".format(request.args.to_dict(flat=False)))
+    print(f"request.args = {request.args.to_dict(flat=False)}")
 
     orders = []  # A list of all orders satisfying requirements
 

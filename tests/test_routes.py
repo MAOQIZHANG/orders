@@ -8,13 +8,11 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from service import app
 from datetime import datetime
+from service import app
 from service.models import Order, db, init_db
-from service.models import OrderStatus
 from service.common import status  # HTTP Status Codes
 from tests.factories import OrderFactory, ItemFactory
-from datetime import datetime, timedelta, timezone
 
 
 DATABASE_URI = os.getenv(
