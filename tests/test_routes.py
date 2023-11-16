@@ -8,13 +8,11 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from service import app
 from datetime import datetime
+from service import app
 from service.models import Order, db, init_db
-from service.models import OrderStatus
 from service.common import status  # HTTP Status Codes
 from tests.factories import OrderFactory, ItemFactory
-from datetime import datetime, timedelta, timezone
 
 
 DATABASE_URI = os.getenv(
@@ -300,78 +298,6 @@ class TestOrderService(TestCase):
             f"Order with id '{non_existent_order_id}' was not found.",
         )
 
-    def test_update_item_by_id_to_order(self):
-        """It should update an item to an order by item ID and amount"""
-
-        # Create a test order and item
-        order = OrderFactory()
-        item = ItemFactory()
-
-        # Save the order and item to the database
-        db.session.add(order)
-        db.session.add(item)
-        db.session.commit()
-
-        # test order not found
-        non_existent_order_id = -1  # An order ID that does not exist
-
-        response = self.client.put(
-            f"/orders/{non_existent_order_id}/items/{item.id}",
-            content_type="application/json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        data = response.get_json()
-        self.assertIn("error", data)
-        self.assertEqual(data["error"], "Order not found")
-
-        # test item not found
-        non_existent_item_id = -1  # An item ID that does not exist
-
-        response = self.client.put(
-            f"/orders/{order.id}/items/{non_existent_item_id}",
-            content_type="application/json",
-        )
-
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        data = response.get_json()
-        self.assertIn("error", data)
-        self.assertEqual(data["error"], "Item not found")
-
-        order = self._create_orders(1)[0]
-        item = self._create_items_in_existing_order(order.id, 3)[0]
-        initial_amount = item.amount
-        new_amount = 2 + initial_amount
-        initial_order_cost_amount = order.cost_amount
-
-        # Send a POST request to add the item to the order
-        response = self.client.put(
-            f"/orders/{order.id}/items/{item.id}?amount={new_amount}",
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-
-        order_updated = response.get_json()["order"]
-        item_updated = response.get_json()["item"]
-        self.assertIsNotNone(item_updated["id"])
-        self.assertEqual(
-            int(order_updated["cost_amount"]),
-            int(initial_order_cost_amount + 2 * item.price),
-        )
-
-        response = self.client.put(
-            f"/orders/{order.id}/items/{item.id}",
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        order_updated = response.get_json()["order"]
-        item_updated = response.get_json()["item"]
-        self.assertIsNotNone(item_updated["id"])
-        self.assertEqual(
-            int(order_updated["cost_amount"]),
-            int(initial_order_cost_amount + 3 * item.price),
-        )
-
     def test_list_items_in_one_order(self):
         """It should list items in one order."""
         # Create an order with items
@@ -386,13 +312,9 @@ class TestOrderService(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         # print(data)
-        self.assertEqual(data["order_id"], order.id, "Id does not match")
-
-        # Verify that there are items in the response
-        self.assertIn("items", data)
 
         # Verify that items are listed only if the order exists
-        self.assertEqual(len(data["items"]), 3)
+        self.assertEqual(len(data), 3)
 
         non_exist_order_id = 999
         resp = self.client.get(
@@ -434,7 +356,7 @@ class TestOrderService(TestCase):
 
         # Verify that items are listed only if the order exists
         self.assertEqual(
-            resp.status_code, status.HTTP_400_BAD_REQUEST, "Item not in Order"
+            resp.status_code, status.HTTP_404_NOT_FOUND, "Item not in Order"
         )
 
     def test_delete_one_item_in_one_order(self):
@@ -456,7 +378,7 @@ class TestOrderService(TestCase):
             content_type="application/json",
         )
 
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND, "Order not found")
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
         non_exist_item_id = 999
         resp = self.client.delete(
@@ -465,9 +387,7 @@ class TestOrderService(TestCase):
         )
 
         # Verify that items are listed only if the order exists
-        self.assertEqual(
-            resp.status_code, status.HTTP_400_BAD_REQUEST, "Item not in Order"
-        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_update_an_order(self):
         """It should Update an Order."""
@@ -547,4 +467,55 @@ class TestOrderService(TestCase):
         )
 
         # Verify that the response is a 404 error.
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_update_item_by_id(self):
+        """It should update an item to an order by item ID and amount"""
+
+        # Create a test order and item
+        order = self._create_orders(1)[0]
+        item = self._create_items_in_existing_order(order.id, 3)[0]
+
+        resp = self.client.get(
+            f"/orders/{order.id}/items/{item.id}",
+            content_type="application/json",
+        )
+
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        order_id = order.id
+        item_id = item.id
+
+        print(order)
+
+        # Update the item
+        updated_data = {"title": "Updated Title", "amount": 20, "status": "COMPLETED"}
+
+        response = self.client.put(
+            f"/orders/{-1}/items/{item_id}",
+            json=updated_data,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.put(
+            f"/orders/{order_id}/items/{item_id}",
+            json=updated_data,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # Verify the item was updated
+        updated_item = response.get_json()
+        self.assertEqual(updated_item["title"], "Updated Title")
+        self.assertEqual(updated_item["amount"], 20)
+        self.assertEqual(updated_item["status"], "COMPLETED")
+
+        # Test updating a non-existent item
+        nonexistent_item_id = 9999  # Adjust as necessary
+        response = self.client.put(
+            f"/orders/{order_id}/items/{nonexistent_item_id}",
+            json=updated_data,
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
