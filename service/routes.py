@@ -19,7 +19,6 @@ DELETE /orders/{order_id}/items/{item_id} - deletes an Order Item record in the 
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
-from datetime import datetime, timezone, timedelta
 
 # Import Flask application
 from . import app
@@ -68,7 +67,7 @@ def check_content_type(media_type):
 def list_orders():
     """Find an order by ID or Returns all of the Orders"""
     app.logger.info("Request for Order list")
-    print("request.args = {}".format(request.args.to_dict(flat=False)))
+    print(f"request.args = {request.args.to_dict(flat=False)}")
 
     orders = []  # A list of all orders satisfying requirements
 
@@ -213,49 +212,41 @@ def create_item_in_an_order(order_id):
 ######################################################################
 # UPDATE ITEM BY item id IN ORDER
 ######################################################################
-@app.route("/orders/<order_id>/items/<item_id>", methods=["PUT"])
-def update_item_by_id_to_order(order_id, item_id):
+@app.route("/orders/<order_id>/items/<id>", methods=["PUT"])
+def update_item(order_id, id):
     """
     Adds an item by item ID to an existing order
     This endpoint will add an item (specified by item_id) to the specified order
     """
-    app.logger.info(f"Request to add item with ID {item_id} to Order {order_id}")
+    app.logger.info(f"Request to update item with ID {id}")
     check_content_type("application/json")
 
-    # Check if the order exists
     order = Order.find(order_id)
-    if order is None:
-        # Handle the case when the order does not exist
-        return make_response(
-            jsonify(error="Order not found"), status.HTTP_404_NOT_FOUND
-        )
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, "Order not found")
 
     # Check if the item exists
-    item = Item.find(item_id)
+    data = request.get_json()
+
+    item = Item.find(id)
     if item is None:
         # Handle the case when the order does not exist
         return make_response(jsonify(error="Item not found"), status.HTTP_404_NOT_FOUND)
 
-    amount = request.args.get("amount", type=int)
-    if amount is not None:
-        # Update the item amount using the 'amount' query parameter
-        original_amount = item.amount
-        item.amount = amount
-        order.cost_amount += (amount - original_amount) * item.price
-    else:
-        # Increment the item amount by 1
-        item.amount += 1
-        item.update()
-        order.cost_amount += item.price
+    if "title" in data:
+        item.title = data["title"]
+    if "amount" in data:
+        item.amount = data["amount"]
+    if "status" in data:
+        item.status = data["status"]
 
+    item.update()
     order.update()
 
-    location_url = url_for(
-        "update_item_by_id_to_order", order_id=order_id, item_id=item_id, _external=True
-    )
+    location_url = url_for("update_item", order_id=order_id, id=id, _external=True)
 
     return make_response(
-        jsonify(item=item.serialize(), order=order.serialize()),
+        jsonify(item.serialize()),
         status.HTTP_202_ACCEPTED,
         {"Location": location_url},
     )
@@ -274,9 +265,7 @@ def list_items_in_one_order(order_id):
         results = order["items"]
         # Process the query string if any
 
-        return make_response(
-            jsonify(order_id=int(order_id), items=results), status.HTTP_200_OK
-        )
+        return make_response(jsonify(results), status.HTTP_200_OK)
     else:
         abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
 
@@ -294,9 +283,7 @@ def list_one_item_in_one_order(order_id, item_id):
     for item in results:
         if item["id"] == item_id:
             return make_response(jsonify(item), status.HTTP_200_OK)
-    return make_response(
-        jsonify(error="Item not in Order"), status.HTTP_400_BAD_REQUEST
-    )
+    return make_response(jsonify(error="Item not in Order"), status.HTTP_404_NOT_FOUND)
     # Process the query string if any
 
 
@@ -308,21 +295,18 @@ def delete_one_item_in_one_order(order_id, item_id):
     app.logger.info("Request for Item list in one order")
     # order_id = request.args.get("order_id")
     order = Order.find(order_id)
-    if not order:
-        abort(status.HTTP_404_NOT_FOUND, f"Order not found")
+    if order:
+        order = order.serialize()
+        item = Item.find(item_id)
+        if (item is not None) and (item.order_id == order_id):
+            item.delete()
+            app.logger.info(
+                "Item with ID [%s] and order ID [%s] delete complete.",
+                item_id,
+                order_id,
+            )
 
-    order = order.serialize()
-    item = Item.find(item_id)
-    if (item is not None) and (item.order_id == order_id):
-        item.delete()
-        app.logger.info(
-            "Item with ID [%s] and order ID [%s] delete complete.", item_id, order_id
-        )
-        return make_response("", status.HTTP_204_NO_CONTENT)
-
-    return make_response(
-        jsonify(error="Item not in Order"), status.HTTP_400_BAD_REQUEST
-    )
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
@@ -368,14 +352,7 @@ def delete_an_order(order_id):
     app.logger.info(f"Delete an order with order ID {order_id}")
 
     order = Order.find(order_id)
+    if order:
+        order.delete()
 
-    if not order:
-        abort(status.HTTP_404_NOT_FOUND, "Order not found")
-
-    order.delete()
-
-    return make_response(
-        "",
-        status.HTTP_204_NO_CONTENT,
-        {"Deleted_order_id": order_id},
-    )
+    return make_response("", status.HTTP_204_NO_CONTENT)
