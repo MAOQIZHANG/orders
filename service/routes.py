@@ -1,6 +1,7 @@
 """
 My Service
 
+
 Describe what your service does here
 Paths:
 ------
@@ -9,6 +10,7 @@ GET /orders/{id} - Returns the Order with a given id number
 POST /orders - creates a new Order record in the database
 PUT /orders/{id} - updates an Order record in the database
 DELETE /orders/{id} - deletes an Order record in the database
+
 
 GET /orders/{order_id}/items - Returns a list all of the Items of the given Order id
 GET /orders/{order_id}/items/{item_id} - Returns the Order Item with a given id number
@@ -19,6 +21,7 @@ DELETE /orders/{order_id}/items/{item_id} - deletes an Order Item record in the 
 from flask import jsonify, request, url_for, abort, make_response
 from service.common import status  # HTTP Status Codes
 from service.models import Order, Item
+
 
 # Import Flask application
 from . import app
@@ -126,7 +129,7 @@ def read_an_order(order_id):
 
 @app.route("/orders/orders_by_status", methods=["GET"])
 def list_orders_by_status():
-    """List orders filtered by status and optionally by user_id."""
+    """List orders filtered by status (user_id field added)"""
     status_param = request.args.get("status")
     user_id = request.args.get("user_id")
 
@@ -178,6 +181,7 @@ def create_orders():
 def create_item_in_an_order(order_id):
     """
     Create an item on an order
+
 
     This endpoint will add a new item to an order.
     """
