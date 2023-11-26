@@ -1,6 +1,8 @@
 [tool.poetry]
 name = "orders"
 version = "0.1.0"
+description = "NYU DevOps Lab for learning GitHub Actions"
+authors = ["John Rofrano <johnnyroy@johnrofrano.com>"]
 license = "Apache 2.0"
 readme = "README.md"
 
@@ -11,9 +13,6 @@ redis = "^5.0.1"
 flask-redis = "^0.4.0"
 python-dotenv = "^1.0.0"
 gunicorn = "^21.2.0"
-Flask-SQLAlchemy = "^3.0.2"
-Werkzeug=="^2.3.3"
-SQLAlchemy=="^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 honcho = "^1.1.0"
