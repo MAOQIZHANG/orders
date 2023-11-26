@@ -120,11 +120,11 @@ def read_an_order(order_id):
     app.logger.info("Request for Read an Order")
     order = Order.find(order_id)
 
-    if order is not None:
+    if order:
         results = order.serialize()
         return make_response(jsonify(results), status.HTTP_200_OK)
-    else:
-        abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
+
+    abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
 
 
 @app.route("/orders/orders_by_status", methods=["GET"])
@@ -321,7 +321,7 @@ def update_an_order(order_id):
     """
     Update information (e.g., address, name) for an order.
     """
-    app.logger.info(f"Update order information with ID {order_id}")
+    app.logger.info("Update order information with ID: %d", order_id)
 
     # Find the order by ID
     order = Order.find(order_id)
