@@ -11,10 +11,9 @@ import logging
 from unittest import TestCase
 from datetime import datetime
 from service import app
-from service.models import Order, db, init_db
+from service.models import OrderStatus, Order, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import OrderFactory, ItemFactory
-from service.models import OrderStatus
 
 
 DATABASE_URI = os.getenv(
@@ -185,6 +184,7 @@ class TestOrderService(TestCase):
         self.assertEqual(len(data), 0)
 
     def test_read_an_order(self):
+        """It should test get one order"""
         orders = self._create_orders(3)
         resp = self.client.get(f"orders/{orders[0].id}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
