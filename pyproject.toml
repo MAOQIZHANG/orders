@@ -7,25 +7,23 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 Flask = "^3.0.0"
+Flask-SQLAlchemy=="^3.0.2"
 redis = "^5.0.1"
 flask-redis = "^0.4.0"
 python-dotenv = "^1.0.0"
 gunicorn = "^21.2.0"
-Flask-SQLAlchemy = "^3.0.2"
-Werkzeug=="^2.3.3"
-SQLAlchemy=="^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 honcho = "^1.1.0"
 pylint = "^3.0.1"
-flake8 = "^6.0.0"
+flake8 = "^6.1.0"
 black = "^23.9.1"
 pytest = "^7.4.2"
 pytest-pspec = "^0.0.4"
 pytest-cov = "^4.1.0"
 factory-boy = "^3.3.0"
 coverage = "^7.3.2"
-httpie = "^3.2.1"
+httpie = "^3.2.2"
 
 [build-system]
 requires = ["poetry-core"]
