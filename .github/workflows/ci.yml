@@ -70,3 +70,5 @@ jobs:
 
       - name: Upload code coverage
         uses: codecov/codecov-action@v3.1.4
+        run: |
+          codecov --file=coverage.xml
