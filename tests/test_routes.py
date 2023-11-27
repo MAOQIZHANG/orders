@@ -11,7 +11,7 @@ import logging
 from unittest import TestCase
 from datetime import datetime
 from service import app
-from service.models import OrderStatus, Order, db, init_db
+from service.models import OrderStatus, ItemStatus, Order, db, init_db
 from service.common import status  # HTTP Status Codes
 from tests.factories import OrderFactory, ItemFactory
 
@@ -96,7 +96,6 @@ class TestOrderService(TestCase):
             item.order_id = new_item["order_id"]
             item.id = new_item["id"]
             item.amount = new_item["amount"]
-            item.status = "Added to order"
             items.append(item)
         return items
 
@@ -263,7 +262,7 @@ class TestOrderService(TestCase):
         """It should create an item in an order"""
         # Create a test order and item
         order = self._create_orders(1)[0]
-        item = ItemFactory()
+        item = ItemFactory(status=ItemStatus.INSTOCK)
         db.session.add(item)
         db.session.commit()
 
@@ -285,7 +284,6 @@ class TestOrderService(TestCase):
         self.assertEqual(data["product_id"], item.product_id)
         self.assertEqual(data["amount"], 1)
         self.assertEqual(data["price"], item.price)
-        self.assertEqual(data["status"], "Added to order")
 
         # test order not found
         non_existent_order_id = -1  # An order ID that does not exist
@@ -492,7 +490,7 @@ class TestOrderService(TestCase):
         # print(order)
 
         # Update the item
-        updated_data = {"title": "Updated Title", "amount": 20, "status": "COMPLETED"}
+        updated_data = {"title": "Updated Title", "amount": 20, "status": "LOWSTOCK"}
 
         response = self.client.put(
             f"/orders/{-1}/items/{item_id}",
@@ -512,7 +510,7 @@ class TestOrderService(TestCase):
         updated_item = response.get_json()
         self.assertEqual(updated_item["title"], "Updated Title")
         self.assertEqual(updated_item["amount"], 20)
-        self.assertEqual(updated_item["status"], "COMPLETED")
+        self.assertEqual(updated_item["status"], "LOWSTOCK")
 
         # Test updating a non-existent item
         nonexistent_item_id = 9999  # Adjust as necessary

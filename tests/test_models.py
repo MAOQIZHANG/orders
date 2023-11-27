@@ -193,7 +193,7 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(items[0]["amount"], item.amount)
         self.assertEqual(items[0]["price"], item.price)
         self.assertEqual(items[0]["product_id"], item.product_id)
-        self.assertEqual(items[0]["status"], item.status)
+        self.assertEqual(items[0]["status"], item.status.name)
 
     def test_deserialize_an_order(self):
         """It should Deserialize an order"""
