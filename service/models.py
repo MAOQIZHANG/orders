@@ -66,7 +66,7 @@ class Item(db.Model):
         Creates a Item to the database
         """
         logger.info("Creating %s", self.title)
-        self.id = None  # pylint: disable=invalid-title
+        self.id = None  # pylint: disable=invalid-name
         db.session.add(self)
         # print("william")
         db.session.commit()
@@ -283,4 +283,12 @@ class Order(db.Model):
 
     @classmethod
     def find_by_user_id(cls, user_id):
+        """Find an order by user_id
+
+        Args:
+            user_id (int): the user_id of the Orders you want to match
+
+        Returns:
+            _type_: Returns all Orders with the given user_id
+        """
         return cls.query.filter(cls.user_id == user_id)
