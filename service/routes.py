@@ -120,11 +120,11 @@ def read_an_order(order_id):
     app.logger.info("Request for Read an Order")
     order = Order.find(order_id)
 
-    if order is not None:
+    if order:
         results = order.serialize()
         return make_response(jsonify(results), status.HTTP_200_OK)
-    else:
-        abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
+
+    abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
 
 
 @app.route("/orders/orders_by_status", methods=["GET"])
@@ -216,13 +216,13 @@ def create_item_in_an_order(order_id):
 ######################################################################
 # UPDATE ITEM BY item id IN ORDER
 ######################################################################
-@app.route("/orders/<order_id>/items/<id>", methods=["PUT"])
-def update_item(order_id, id):
+@app.route("/orders/<order_id>/items/<item_id>", methods=["PUT"])
+def update_item(order_id, item_id):
     """
     Adds an item by item ID to an existing order
     This endpoint will add an item (specified by item_id) to the specified order
     """
-    app.logger.info(f"Request to update item with ID {id}")
+    app.logger.info("Request to update item with ID %d", item_id)
     check_content_type("application/json")
 
     order = Order.find(order_id)
@@ -232,7 +232,7 @@ def update_item(order_id, id):
     # Check if the item exists
     data = request.get_json()
 
-    item = Item.find(id)
+    item = Item.find(item_id)
     if item is None:
         # Handle the case when the order does not exist
         return make_response(jsonify(error="Item not found"), status.HTTP_404_NOT_FOUND)
@@ -247,7 +247,9 @@ def update_item(order_id, id):
     item.update()
     order.update()
 
-    location_url = url_for("update_item", order_id=order_id, id=id, _external=True)
+    location_url = url_for(
+        "update_item", order_id=order_id, item_id=item_id, _external=True
+    )
 
     return make_response(
         jsonify(item.serialize()),
@@ -261,17 +263,20 @@ def update_item(order_id, id):
 ######################################################################
 @app.route("/orders/<order_id>/items", methods=["GET"])
 def list_items_in_one_order(order_id):
+    """
+    List all items in one order
+    """
     app.logger.info("Request for Item list in one order")
     # order_id = request.args.get("order_id")
     order = Order.find(order_id)
-    if order is not None:
+    if order:
         order = order.serialize()
         results = order["items"]
         # Process the query string if any
 
         return make_response(jsonify(results), status.HTTP_200_OK)
-    else:
-        abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
+
+    abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
 
 
 ######################################################################
@@ -279,6 +284,9 @@ def list_items_in_one_order(order_id):
 ######################################################################
 @app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["GET"])
 def list_one_item_in_one_order(order_id, item_id):
+    """
+    Get one item in one order
+    """
     app.logger.info("Request for Item list in one order")
     # order_id = request.args.get("order_id")
     order = Order.find(order_id)
@@ -296,6 +304,9 @@ def list_one_item_in_one_order(order_id, item_id):
 ######################################################################
 @app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
 def delete_one_item_in_one_order(order_id, item_id):
+    """
+    Delete one item in one order
+    """
     app.logger.info("Request for Item list in one order")
     # order_id = request.args.get("order_id")
     order = Order.find(order_id)
@@ -321,7 +332,7 @@ def update_an_order(order_id):
     """
     Update information (e.g., address, name) for an order.
     """
-    app.logger.info(f"Update order information with ID {order_id}")
+    app.logger.info("Update order information with ID: %d", order_id)
 
     # Find the order by ID
     order = Order.find(order_id)
@@ -353,7 +364,7 @@ def delete_an_order(order_id):
     """
     Delete an order by order ID.
     """
-    app.logger.info(f"Delete an order with order ID {order_id}")
+    app.logger.info("Delete an order with order ID %d", order_id)
 
     order = Order.find(order_id)
     if order:
