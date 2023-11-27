@@ -521,8 +521,8 @@ class TestOrderService(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_list_orders_by_status(self):
-        """It should list orders filtered by a specific status."""
+    def test_list_orders(self):
+        """It should list all orders and list orders filtered by a specific status/user_id."""
         # Explicitly create orders with 'NEW' status
         new_order1 = OrderFactory(status=OrderStatus.NEW)
         new_order2 = OrderFactory(status=OrderStatus.NEW)
@@ -548,8 +548,7 @@ class TestOrderService(TestCase):
         # Check if there is at least 1 order with APPROVED status
         self.assertTrue(any(order["status"] == "APPROVED" for order in data))
 
-    def test_list_orders_by_status_and_user_id(self):
-        """It should list orders filtered by a specific status and user ID."""
+        # It should list orders filtered by a specific status and user ID
         user_id = 1000
         # Create orders with a specific user ID and different statuses
         self._create_orders(1, user_id=user_id)  # this is NEW
@@ -570,8 +569,7 @@ class TestOrderService(TestCase):
             )
         )
 
-    def test_list_all_orders(self):
-        """It should list all orders when no status filter is applied."""
+        # It should list all orders when no status filter is applied
         self._create_orders(2)  # Create some orders
 
         # Test for all orders
