@@ -50,8 +50,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip wheel
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
+          pip install -r requirements.txt
+      
       - name: Linting
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -64,7 +64,7 @@ jobs:
       - name: Run unit tests with green
         run: |
           export FLASK_APP=service:app
-          pytest --pspec --cov=service --cov-fail-under=95 --disable-warnings
+          make test --pspec --cov=service --cov-fail-under=95 --disable-warnings
         env:
           DATABASE_URI: "postgresql://postgres:pgs3cr3t@postgres:5432/testdb"
 
