@@ -210,25 +210,29 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(new_order.status, order.status)
         self.assertEqual(new_order.user_id, order.user_id)
 
-    def test_deserialize_with_key_error(self):
-        """It should not Deserialize an order with a KeyError"""
-        order = Order()
-        self.assertRaises(DataValidationError, order.deserialize, {})
+    def test_deserialize_with_key_error_or_type_error(self):
+        """It should not Deserialize an order with a KeyError or with a TypeError"""
+        order1 = Order()
+        self.assertRaises(DataValidationError, order1.deserialize, {})
+        order2 = Order()
+        self.assertRaises(DataValidationError, order2.deserialize, [])
 
-    def test_deserialize_with_type_error(self):
-        """It should not Deserialize an order with a TypeError"""
-        order = Order()
-        self.assertRaises(DataValidationError, order.deserialize, [])
+    # def test_deserialize_with_type_error(self):
+    #     """It should not Deserialize an order with a TypeError"""
+    #     order = Order()
+    #     self.assertRaises(DataValidationError, order.deserialize, [])
 
-    def test_deserialize_item_key_error(self):
-        """It should not Deserialize an item with a KeyError"""
-        item = Item()
-        self.assertRaises(DataValidationError, item.deserialize, {})
+    def test_deserialize_item_key_error_or_type_error(self):
+        """It should not Deserialize an item with a KeyError or with a TypeError"""
+        item1 = Item()
+        self.assertRaises(DataValidationError, item1.deserialize, {})
+        item2 = Item()
+        self.assertRaises(DataValidationError, item2.deserialize, [])
 
-    def test_deserialize_item_type_error(self):
-        """It should not Deserialize an item with a TypeError"""
-        item = Item()
-        self.assertRaises(DataValidationError, item.deserialize, [])
+    # def test_deserialize_item_type_error(self):
+    #     """It should not Deserialize an item with a TypeError"""
+    #     item = Item()
+    #     self.assertRaises(DataValidationError, item.deserializ
 
     def test_add_order_item(self):
         """It should Create an order with an item and add it to the database"""
