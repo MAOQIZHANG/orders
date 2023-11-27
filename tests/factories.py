@@ -18,7 +18,7 @@ Test Factory to make fake objects for testing
 from datetime import datetime, UTC
 import factory
 from factory.fuzzy import FuzzyChoice, FuzzyDateTime, FuzzyFloat, FuzzyInteger
-from service.models import Order, Item, OrderStatus
+from service.models import Order, Item, OrderStatus, ItemStatus
 
 
 class OrderFactory(factory.Factory):
@@ -87,6 +87,6 @@ class ItemFactory(factory.Factory):
     price = FuzzyFloat(1.00, 1000.00)
     product_id = FuzzyInteger(1000, 5000)
     status = FuzzyChoice(
-        choices=["In Stock", "Low Stock", "Out of Stock"]
-    )  # make it an enum
+        choices=[ItemStatus.INSTOCK, ItemStatus.LOWSTOCK, ItemStatus.OUTOFSTOCK]
+    )
     order = factory.SubFactory(OrderFactory)

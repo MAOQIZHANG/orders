@@ -194,7 +194,6 @@ def create_item_in_an_order(order_id):
     item.deserialize(request.get_json())
     item.order_id = order_id
     item.amount = 1
-    item.status = "Added to order"
     item.create()
 
     # order.items.append(item)

@@ -36,6 +36,14 @@ class OrderStatus(Enum):
     CANCELED = 5
 
 
+class ItemStatus(Enum):
+    """Enumeration of valid Item Status"""
+
+    INSTOCK = 0
+    LOWSTOCK = 1
+    OUTOFSTOCK = 2
+
+
 class Item(db.Model):
     """
     Class that represents an Item
@@ -55,8 +63,8 @@ class Item(db.Model):
         db.String(255), nullable=False
     )  # This is the product serial number, different from database ID.
     status = db.Column(
-        db.String(50), nullable=False
-    )  # TODO: Change to enum type for robustness.
+        db.Enum(ItemStatus), nullable=False, server_default=(ItemStatus.INSTOCK.name)
+    )
 
     def __repr__(self):
         return f"<Item {self.title} id=[{self.id}]>"
@@ -93,7 +101,7 @@ class Item(db.Model):
             "amount": self.amount,
             "price": self.price,
             "product_id": self.product_id,
-            "status": self.status,
+            "status": self.status.name,
         }
 
     def deserialize(self, data):
@@ -108,7 +116,7 @@ class Item(db.Model):
             self.title = data["title"]
             self.price = data["price"]
             self.product_id = data["product_id"]
-            self.status = data["status"]
+            self.status = getattr(ItemStatus, data["status"])
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Item: missing " + error.args[0]
