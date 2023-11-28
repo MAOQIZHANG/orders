@@ -45,12 +45,14 @@ def step_impl(context):
     # load the database with new orders
     for row in context.table:
         payload = {
-            "id": row['id'],
             "name": row['name'],
-            "category": row['category'],
-            "available": row['available'] in ['True', 'true', '1'],
-            "gender": row['gender'],
-            "birthday": row['birthday']
+            "create_time": row['create_time'],
+            "address": row['address'],
+            "cost_amount": float(row['cost_amount']),
+            "status": row['status'],
+            "user_id": int(row['user_id']),
+            "items": []
         }
+
         context.resp = requests.post(rest_endpoint, json=payload)
         assert(context.resp.status_code == HTTP_201_CREATED)

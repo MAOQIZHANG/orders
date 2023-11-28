@@ -127,10 +127,9 @@ class TestOrderService(TestCase):
         """It should Get an Order by ID"""
         orders = self._create_orders(3)
         resp = self.client.get(BASE_URL, query_string=f"order_id={orders[1].id}")
-        # print(orders[1].id)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()[0]
-        # print(data)
+        print(data)
         self.assertEqual(data["id"], orders[1].id, "Id does not match")
 
     def test_get_order_by_id_with_user_id(self):
