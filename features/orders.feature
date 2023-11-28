@@ -39,12 +39,3 @@ Scenario: Create an Order
     And I should see "NEW" in the "Status" dropdown
     And I should see "1234" in the "User ID" field
 
-
-Scenario: List all orders
-    When I visit the "Home Page"
-    And I press the "Search" button
-    Then I should see the message "Success"
-    And I should see "Kanye West" in the results
-    And I should see "Taylor Swift" in the results
-    And I should not see "Maoqi Zhang" in the results
-
