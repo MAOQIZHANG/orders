@@ -1,22 +1,17 @@
 Feature: The order service back-end
-    As a Pet Store Owner
+    As a eCommerce Merchant
     I need a RESTful catalog service
-    So that I can keep track of all my pets
+    So that I can keep track of all orders
 
 Background:
-    Given the following pets
-        | name       | category | available | gender  | birthday   |
-        | fido       | dog      | True      | MALE    | 2019-11-18 |
-        | kitty      | cat      | True      | FEMALE  | 2020-08-13 |
-        | leo        | lion     | False     | MALE    | 2021-04-01 |
-        | sammy      | snake    | True      | UNKNOWN | 2018-06-04 |
+    Given the following orders
 
 Scenario: The server is running
     When I visit the "Home Page"
-    Then I should see "Pet Demo RESTful Service" in the title
+    Then I should see "Order RESTful Service" in the title
     And I should not see "404 Not Found"
 
-Scenario: Create a Pet
+Scenario: Create a Order
     When I visit the "Home Page"
     And I set the "Name" to "Happy"
     And I set the "Category" to "Hippo"
@@ -39,7 +34,7 @@ Scenario: Create a Pet
     And I should see "Male" in the "Gender" dropdown
     And I should see "2022-06-16" in the "Birthday" field
 
-Scenario: List all pets
+Scenario: List all orders
     When I visit the "Home Page"
     And I press the "Search" button
     Then I should see the message "Success"
@@ -47,7 +42,7 @@ Scenario: List all pets
     And I should see "kitty" in the results
     And I should not see "leo" in the results
 
-Scenario: Search for dogs
+Scenario: Search for NEW orders
     When I visit the "Home Page"
     And I set the "Category" to "dog"
     And I press the "Search" button
@@ -56,7 +51,7 @@ Scenario: Search for dogs
     And I should not see "kitty" in the results
     And I should not see "leo" in the results
 
-Scenario: Search for available
+Scenario: Search for orders on date 2023-10-10
     When I visit the "Home Page"
     And I select "True" in the "Available" dropdown
     And I press the "Search" button
@@ -66,7 +61,7 @@ Scenario: Search for available
     And I should see "sammy" in the results
     And I should not see "leo" in the results
 
-Scenario: Update a Pet
+Scenario: Update an Order
     When I visit the "Home Page"
     And I set the "Name" to "fido"
     And I press the "Search" button
