@@ -37,7 +37,6 @@ $(function () {
 
     $("#create-btn").click(function () {
 
-        let id =  $("#order_id").val();
         let name = $("#order_name").val();
         let create_time = $("#order_create_time").val();
         let address = $("#order_address").val();
@@ -47,13 +46,13 @@ $(function () {
         
 
         let data = {
-            "id" : id, 
             "name": name,
             "create_time": create_time,
             "address": address,
-            "cost_amount": cost_amount,
+            "cost_amount": parseInt(cost_amount, 10),
             "status": status,
-            "user_id": user_id
+            "user_id": parseInt(user_id, 10),
+            "items" : []
         };
 
         $("#flash_message").empty();
