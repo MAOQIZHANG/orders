@@ -15,9 +15,9 @@
 ######################################################################
 
 """
-Pet Steps
+Order Steps
 
-Steps file for Pet.feature
+Steps file for Order.feature
 
 For information on Waiting until elements are present in the HTML see:
     https://selenium-python.readthedocs.io/waits.html
@@ -30,26 +30,29 @@ HTTP_200_OK = 200
 HTTP_201_CREATED = 201
 HTTP_204_NO_CONTENT = 204
 
-@given('the following pets')
+@given('the following orders')
 def step_impl(context):
-    """ Delete all Pets and load new ones """
+    """ Delete all Orders and load new ones """
 
-    # List all of the pets and delete them one by one
-    rest_endpoint = f"{context.base_url}/pets"
+    # List all of the orders and delete them one by one
+    rest_endpoint = f"{context.base_url}/orders"
     context.resp = requests.get(rest_endpoint)
     assert(context.resp.status_code == HTTP_200_OK)
-    for pet in context.resp.json():
-        context.resp = requests.delete(f"{rest_endpoint}/{pet['id']}")
+    for order in context.resp.json():
+        context.resp = requests.delete(f"{rest_endpoint}/{order['id']}")
         assert(context.resp.status_code == HTTP_204_NO_CONTENT)
 
-    # load the database with new pets
+    # load the database with new orders
     for row in context.table:
         payload = {
             "name": row['name'],
-            "category": row['category'],
-            "available": row['available'] in ['True', 'true', '1'],
-            "gender": row['gender'],
-            "birthday": row['birthday']
+            "create_time": row['create_time'],
+            "address": row['address'],
+            "cost_amount": float(row['cost_amount']),
+            "status": row['status'],
+            "user_id": int(row['user_id']),
+            "items": []
         }
+
         context.resp = requests.post(rest_endpoint, json=payload)
         assert(context.resp.status_code == HTTP_201_CREATED)
