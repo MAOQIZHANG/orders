@@ -64,7 +64,7 @@ Success Response : `200 OK`
 ```
 {
   "name": "Order REST API Service",
-  "paths": "http://localhost:8000/orders",
+  "paths": "http://localhost:8080/orders",
   "version": "1.0"
 }
 ```
