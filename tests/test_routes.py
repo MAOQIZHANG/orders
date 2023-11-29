@@ -129,7 +129,7 @@ class TestOrderService(TestCase):
         resp = self.client.get(BASE_URL, query_string=f"order_id={orders[1].id}")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()[0]
-        print(data)
+        # print(data)
         self.assertEqual(data["id"], orders[1].id, "Id does not match")
 
     def test_get_order_by_id_with_user_id(self):
@@ -209,7 +209,7 @@ class TestOrderService(TestCase):
     def test_create_order(self):
         """It should Create a new Order"""
         order = OrderFactory()
-        logging.debug("Test order: %s", order.serialize())
+        # logging.debug("Test order: %s", order.serialize())
         resp = self.client.post(
             BASE_URL, json=order.serialize(), content_type="application/json"
         )
