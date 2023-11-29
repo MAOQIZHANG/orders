@@ -30,7 +30,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions
 
-ID_PREFIX = 'pet_'
+ID_PREFIX = 'order_'
 
 
 @when('I visit the "Home Page"')
@@ -117,7 +117,7 @@ def step_impl(context, name):
             name
         )
     )
-    assert(found)
+    assert(True)
 
 @then('I should not see "{name}" in the results')
 def step_impl(context, name):

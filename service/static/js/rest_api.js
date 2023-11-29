@@ -37,7 +37,6 @@ $(function () {
 
     $("#create-btn").click(function () {
 
-        let id =  $("#order_id").val();
         let name = $("#order_name").val();
         let create_time = $("#order_create_time").val();
         let address = $("#order_address").val();
@@ -47,13 +46,13 @@ $(function () {
         
 
         let data = {
-            "id" : id, 
             "name": name,
             "create_time": create_time,
             "address": address,
-            "cost_amount": cost_amount,
+            "cost_amount": parseInt(cost_amount, 10),
             "status": status,
-            "user_id": user_id
+            "user_id": parseInt(user_id, 10),
+            "items" : []
         };
 
         $("#flash_message").empty();
@@ -91,7 +90,6 @@ $(function () {
         let user_id = $("#order_user_id").val();
 
         let data = {
-            "id" : id, 
             "name": name,
             "create_time": create_time,
             "address": address,
@@ -104,7 +102,7 @@ $(function () {
 
         let ajax = $.ajax({
                 type: "PUT",
-                url: `/orders/${order_id}`,
+                url: `/orders/${id}`,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })
@@ -194,26 +192,27 @@ $(function () {
     $("#search-btn").click(function () {
 
         let name = $("#order_name").val();
-        let create_time = $("#order_create_time").val();
         let status = $("#order_status").val();
+        let user_id = $("#order_user_id").val();
+
 
         let queryString = ""
 
         if (name) {
             queryString += 'name=' + name
         }
-        if (create_time) {
-            if (queryString.length > 0) {
-                queryString += '&create_time=' + create_time
-            } else {
-                queryString += 'create_time=' + create_time
-            }
-        }
         if (status) {
             if (queryString.length > 0) {
                 queryString += '&status=' + status
             } else {
                 queryString += 'status=' + status
+            }
+        }
+        if (user_id) {
+            if (queryString.length > 0) {
+                queryString += '&user_id=' + user_id
+            } else {
+                queryString += 'user_id=' + user_id
             }
         }
 

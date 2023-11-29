@@ -76,30 +76,33 @@ def list_orders():
     # - All orders of a particular user ID: "?user_id={some integer}"
 
     # This corresponds to "?"
-    if len(request.args) == 0:
+    query = Order.query
+    query_params = request.args
+
+    if len(query_params) == 0:
         orders = Order.all()
 
     # This corresponds to "?order_id={some integer}"
-    elif "order_id" in request.args and len(request.args) == 1:
-        order_id = request.args.get("order_id")
-        orders.append(Order.find(order_id))
+    if "order_id" in query_params:
+        order_id = query_params.get("order_id")
+        query = query.filter(Order.id == order_id)
 
-    # This corresponds to "?order_id={some integer}&user_id={user id having this order}"
-    elif (
-        "order_id" in request.args
-        and "user_id" in request.args
-        and len(request.args) == 2
-    ):
-        order_id = request.args.get("order_id")
-        user_id = request.args.get("user_id")
-        order = Order.find(order_id)
-        if int(user_id) == order.user_id:
-            orders.append(order)
+    # Check for 'user_id'
+    if "user_id" in query_params:
+        user_id = query_params.get("user_id")
+        query = query.filter(Order.user_id == user_id)
 
-    # This corresponds to "?user_id={some integer}"
-    elif "user_id" in request.args and len(request.args) == 1:
-        user_id = request.args.get("user_id")
-        orders = Order.find_by_user_id(user_id)
+    # Check for 'status'
+    if "status" in query_params:
+        status_ = query_params.get("status")
+        query = query.filter(Order.status == status_)
+
+    if "name" in query_params:
+        name = query_params.get("name")
+        query = query.filter(Order.name == name)
+
+    # Execute the query
+    orders = query.all()
 
     # Return as an array of dictionaries
     results = [order.serialize() for order in orders]
@@ -118,26 +121,6 @@ def read_an_order(order_id):
         return make_response(jsonify(results), status.HTTP_200_OK)
 
     abort(status.HTTP_404_NOT_FOUND, f"Order with id '{order_id}' was not found.")
-
-
-@app.route("/orders/orders_by_status", methods=["GET"])
-def list_orders_by_status():
-    """List orders filtered by status (user_id field added)"""
-    status_param = request.args.get("status")
-    user_id = request.args.get("user_id")
-
-    if status_param and user_id:
-        # Filter orders by the specified status and user_id
-        orders = Order.query.filter_by(status=status_param, user_id=user_id).all()
-    elif status_param:
-        # Filter orders by the specified status
-        orders = Order.query.filter_by(status=status_param).all()
-    else:
-        # If no status is specified, return all orders
-        orders = Order.query.all()
-
-    results = [order.serialize() for order in orders]
-    return jsonify(results), 200
 
 
 ######################################################################

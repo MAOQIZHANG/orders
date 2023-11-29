@@ -30,29 +30,30 @@ HTTP_200_OK = 200
 HTTP_201_CREATED = 201
 HTTP_204_NO_CONTENT = 204
 
-@given('the following orders')
+
+@given("the following orders")
 def step_impl(context):
-    """ Delete all Orders and load new ones """
+    """Delete all Orders and load new ones"""
 
     # List all of the orders and delete them one by one
     rest_endpoint = f"{context.base_url}/orders"
     context.resp = requests.get(rest_endpoint)
-    assert(context.resp.status_code == HTTP_200_OK)
+    assert context.resp.status_code == HTTP_200_OK
     for order in context.resp.json():
         context.resp = requests.delete(f"{rest_endpoint}/{order['id']}")
-        assert(context.resp.status_code == HTTP_204_NO_CONTENT)
+        assert context.resp.status_code == HTTP_204_NO_CONTENT
 
     # load the database with new orders
     for row in context.table:
         payload = {
-            "name": row['name'],
-            "create_time": row['create_time'],
-            "address": row['address'],
-            "cost_amount": float(row['cost_amount']),
-            "status": row['status'],
-            "user_id": int(row['user_id']),
-            "items": []
+            "name": row["name"],
+            "create_time": row["create_time"],
+            "address": row["address"],
+            "cost_amount": float(row["cost_amount"]),
+            "status": row["status"],
+            "user_id": int(row["user_id"]),
+            "items": [],
         }
 
         context.resp = requests.post(rest_endpoint, json=payload)
-        assert(context.resp.status_code == HTTP_201_CREATED)
+        assert context.resp.status_code == HTTP_201_CREATED
