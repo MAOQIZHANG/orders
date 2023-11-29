@@ -195,6 +195,8 @@ $(function () {
         let name = $("#order_name").val();
         let create_time = $("#order_create_time").val();
         let status = $("#order_status").val();
+        let user_id = $("#order_user_id").val();
+
 
         let queryString = ""
 
@@ -213,6 +215,13 @@ $(function () {
                 queryString += '&status=' + status
             } else {
                 queryString += 'status=' + status
+            }
+        }
+        if (user_id) {
+            if (queryString.length > 0) {
+                queryString += '&user_id=' + user_id
+            } else {
+                queryString += 'user_id=' + user_id
             }
         }
 

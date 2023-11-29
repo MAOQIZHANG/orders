@@ -530,7 +530,7 @@ class TestOrderService(TestCase):
         db.session.commit()
 
         # Test for NEW status
-        response = self.client.get(f"{BASE_URL}/orders_by_status?status=NEW")
+        response = self.client.get(BASE_URL, query_string="status=NEW")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         # Check if all orders in response have 'NEW' status
@@ -541,23 +541,13 @@ class TestOrderService(TestCase):
         db.session.add(approved_order)
         db.session.commit()
 
-        response = self.client.get(f"{BASE_URL}/orders_by_status?status=APPROVED")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        # Check if there is at least 1 order with APPROVED status
-        self.assertTrue(any(order["status"] == "APPROVED" for order in data))
-
         # It should list orders filtered by a specific status and user ID
-        user_id = 1000
-        # Create orders with a specific user ID and different statuses
-        self._create_orders(1, user_id=user_id)  # this is NEW
-        approved_order = OrderFactory(status=OrderStatus.APPROVED, user_id=user_id)
-        db.session.add(approved_order)
-        db.session.commit()
+        user_id = approved_order.user_id
+        name = approved_order.name
 
         # Test for APPROVED status with specific user ID
         response = self.client.get(
-            f"{BASE_URL}/orders_by_status?status=APPROVED&user_id={user_id}"
+            BASE_URL, query_string=f"status=APPROVED&user_id={user_id}"
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
@@ -567,12 +557,26 @@ class TestOrderService(TestCase):
                 for order in data
             )
         )
+        self.assertEqual(len(data), 1)
+
+        response = self.client.get(
+            BASE_URL, query_string=f"status=APPROVED&name={name}"
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertTrue(
+            all(
+                order["status"] == "APPROVED" and order["name"] == name
+                for order in data
+            )
+        )
+        self.assertEqual(len(data), 1)
 
         # It should list all orders when no status filter is applied
         self._create_orders(2)  # Create some orders
 
         # Test for all orders
-        response = self.client.get(f"{BASE_URL}/orders_by_status")
+        response = self.client.get(f"{BASE_URL}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertTrue(len(data) >= 2)  # Check that at least 2 orders are returned
