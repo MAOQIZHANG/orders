@@ -288,15 +288,3 @@ class Order(db.Model):
         """
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
-
-    @classmethod
-    def find_by_user_id(cls, user_id):
-        """Find an order by user_id
-
-        Args:
-            user_id (int): the user_id of the Orders you want to match
-
-        Returns:
-            _type_: Returns all Orders with the given user_id
-        """
-        return cls.query.filter(cls.user_id == user_id)
