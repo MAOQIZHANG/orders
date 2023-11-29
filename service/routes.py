@@ -63,7 +63,7 @@ def check_content_type(media_type):
 def list_orders():
     """Find an order by ID or Returns all of the Orders"""
     app.logger.info("Request for Order list")
-    print(f"request.args = {request.args.to_dict(flat=False)}")
+    # print(f"request.args = {request.args.to_dict(flat=False)}")
 
     orders = []  # A list of all orders satisfying requirements
 
