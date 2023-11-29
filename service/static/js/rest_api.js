@@ -90,7 +90,6 @@ $(function () {
         let user_id = $("#order_user_id").val();
 
         let data = {
-            "id" : id, 
             "name": name,
             "create_time": create_time,
             "address": address,
@@ -103,7 +102,7 @@ $(function () {
 
         let ajax = $.ajax({
                 type: "PUT",
-                url: `/orders/${order_id}`,
+                url: `/orders/${id}`,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })
@@ -193,7 +192,6 @@ $(function () {
     $("#search-btn").click(function () {
 
         let name = $("#order_name").val();
-        let create_time = $("#order_create_time").val();
         let status = $("#order_status").val();
         let user_id = $("#order_user_id").val();
 
@@ -202,13 +200,6 @@ $(function () {
 
         if (name) {
             queryString += 'name=' + name
-        }
-        if (create_time) {
-            if (queryString.length > 0) {
-                queryString += '&create_time=' + create_time
-            } else {
-                queryString += 'create_time=' + create_time
-            }
         }
         if (status) {
             if (queryString.length > 0) {
