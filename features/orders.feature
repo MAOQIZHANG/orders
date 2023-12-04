@@ -136,3 +136,22 @@ Scenario: Delete an Order
     When I press the "Clear" button
     And I press the "Search" button
     Then I should not see "Ariana Grande" in the results
+
+
+Scenario: Cancel an Order
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Name" to "Ariana Grande"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Id" field
+    And I press the "Clear" button
+    Then the "Id" field should be empty
+    And the "Name" field should be empty
+    When I paste the "Id" field
+    And I press the "Cancel" button
+    Then I should see the message "Order has been Canceled!"
+    And the "Name" field should be empty
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should see "CANCELED" in the results
