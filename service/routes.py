@@ -10,7 +10,7 @@ GET /orders/{id} - Returns the Order with a given id number
 POST /orders - creates a new Order record in the database
 PUT /orders/{id} - updates an Order record in the database
 DELETE /orders/{id} - deletes an Order record in the database
-
+PUT /orders/{id}/cancel - cancel an Order
 
 GET /orders/{order_id}/items - Returns a list all of the Items of the given Order id
 GET /orders/{order_id}/items/{item_id} - Returns the Order Item with a given id number
@@ -346,3 +346,23 @@ def delete_an_order(order_id):
         order.delete()
 
     return make_response("", status.HTTP_204_NO_CONTENT)
+
+
+######################################################################
+# CANCEL AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>/cancel", methods=["PUT"])
+def cancel_an_order(order_id):
+    """
+    Cancel an order by order ID.
+    """
+    app.logger.info("Cancel an order with order ID %d", order_id)
+    order = Order.find(order_id)
+
+    if not order:
+        abort(status.HTTP_404_NOT_FOUND, "Order not found")
+    else:
+        order.status = "CANCELED"
+
+    order.update()
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
