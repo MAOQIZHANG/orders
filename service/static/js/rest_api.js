@@ -74,6 +74,8 @@ $(function () {
         });
     });
 
+    
+
 
     // ****************************************
     // Update an Order
@@ -168,6 +170,33 @@ $(function () {
         ajax.done(function(res){
             clear_form_data()
             flash_message("Order has been Deleted!")
+        });
+
+        ajax.fail(function(res){
+            flash_message("Server error!")
+        });
+    });
+
+    // ****************************************
+    // Cancel an Order
+    // ****************************************
+
+    $("#cancel-btn").click(function () {
+
+        let order_id = $("#order_id").val();
+
+        $("#flash_message").empty();
+
+        let ajax = $.ajax({
+            type: "PUT",
+            url: `/orders/${order_id}/cancel`,
+            contentType: "application/json",
+            data: '',
+        })
+
+        ajax.done(function(res){
+            clear_form_data()
+            flash_message("Order has been Canceled!")
         });
 
         ajax.fail(function(res){

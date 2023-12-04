@@ -437,9 +437,9 @@ class TestOrderService(TestCase):
         # Verify that the response is a 404 error.
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_an_order(self):
-        """It should delete an Order."""
-        order = OrderFactory()
+    def test_delete_and_cancel_an_order(self):
+        """It should delete an Order, or cancel an order."""
+        order = OrderFactory(status=OrderStatus.NEW)
 
         # Create the order.
         resp = self.client.post(
@@ -466,8 +466,41 @@ class TestOrderService(TestCase):
             f"{BASE_URL}/{nonexistent_order_id}", content_type="application/json"
         )
 
-        # Verify that the response is a 404 error.
+        # Verify that the response is a 204 no content.
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+        order = OrderFactory(status=OrderStatus.NEW)
+
+        # Create the order.
+        resp = self.client.post(
+            BASE_URL, json=order.serialize(), content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        new_order = resp.get_json()
+        order_id = new_order["id"]
+        self.assertEqual(new_order["status"], "NEW")
+
+        # Delete the order.
+        resp = self.client.put(
+            f"{BASE_URL}/{order_id}/cancel", content_type="application/json"
+        )
+
+        # Verify that the order was deleted successfully.
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_order = resp.get_json()
+        self.assertEqual(new_order["status"], "CANCELED")
+
+        # Choose an order ID that does not exist in your database.
+        nonexistent_order_id = 9999  # Replace with an ID that doesn't exist.
+
+        # Attempt to delete the nonexistent order.
+        resp = self.client.put(
+            f"{BASE_URL}/{nonexistent_order_id}/cancel", content_type="application/json"
+        )
+
+        # Verify that the response is a 404 error.
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_item_by_id(self):
         """It should update an item to an order by item ID and amount"""
