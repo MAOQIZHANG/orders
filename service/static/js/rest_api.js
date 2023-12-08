@@ -35,7 +35,7 @@ $(function () {
     // Create an Order
     // ****************************************
 
-    $("#create-btn").click(function () {
+    $("#order-create-btn").click(function () {
 
         let name = $("#order_name").val();
         let create_time = $("#order_create_time").val();
@@ -81,7 +81,7 @@ $(function () {
     // Update an Order
     // ****************************************
 
-    $("#update-btn").click(function () {
+    $("#order-update-btn").click(function () {
 
         let id =  $("#order_id").val();
         let name = $("#order_name").val();
@@ -124,7 +124,7 @@ $(function () {
     // Retrieve an Order
     // ****************************************
 
-    $("#retrieve-btn").click(function () {
+    $("#order-retrieve-btn").click(function () {
 
         let order_id = $("#order_id").val();
 
@@ -154,7 +154,7 @@ $(function () {
     // Delete an Order
     // ****************************************
 
-    $("#delete-btn").click(function () {
+    $("#order-delete-btn").click(function () {
 
         let order_id = $("#order_id").val();
 
@@ -181,7 +181,7 @@ $(function () {
     // Cancel an Order
     // ****************************************
 
-    $("#cancel-btn").click(function () {
+    $("#order-cancel-btn").click(function () {
 
         let order_id = $("#order_id").val();
 
@@ -208,7 +208,7 @@ $(function () {
     // Clear the form
     // ****************************************
 
-    $("#clear-btn").click(function () {
+    $("#order-clear-btn").click(function () {
         $("#order_id").val("");
         $("#flash_message").empty();
         clear_form_data()
@@ -218,7 +218,7 @@ $(function () {
     // Search for an Order
     // ****************************************
 
-    $("#search-btn").click(function () {
+    $("#order-search-btn").click(function () {
 
         let name = $("#order_name").val();
         let status = $("#order_status").val();
