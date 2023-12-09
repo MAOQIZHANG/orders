@@ -10,6 +10,11 @@ Background:
         | Taylor Swift   | 2023-10-18T04:40:35.231701+00:00   | 9458 Rebecca Valley Lake Williamfort, KY 77271       | 0           | NEW        | 6524      |
         | Kanye West     | 2023-10-18T04:40:35.231701+00:00   | 9458 Rebecca Valley Lake Williamfort, KY 77271       | 0           | NEW        | 2344      |
         | New Jeans      | 2023-10-18T04:40:35.231701+00:00   | 2671 Wilson Pass Apt. 048 Hessmouth, WI 95473        | 100         | APPROVED   | 6060      |
+    Given the following items
+        | Product ID | Name              | Price  | Amount   | Status        |
+        | 233        | Ipad              | 699    | 2        | INSTOCK       |
+        | 101        | Iphone 15         | 799    | 8        | LOWSTOCK      |     
+        | 151        | Iphone 15 Plus    | 999    | 1        | NOSTOCK       |
 
 Scenario: The server is running
     When I visit the "Home Page"
@@ -155,3 +160,25 @@ Scenario: Cancel an Order
     When I press the "Order-Clear" button
     And I press the "Order-Search" button
     Then I should see "CANCELED" in the results
+
+
+Scenario: Create an Item in an Order
+
+
+Scenario: List Items in an Order
+    When I visit the "Home Page"
+    And I press the "Order-Clear" button
+    And I press the "Order-Search" button
+    Then I should see the message "Success"
+    When I copy the "ID" field
+    And I press the "Order-Clear" button
+    Then the "ID" field should be empty
+    When I paste the "Order ID" field
+    And I press the "Item-List" button
+    Then I should see the message "Success"
+    
+
+Scenario: Delete Items in an Order
+
+    
+Scenario: Update Items in an Order
