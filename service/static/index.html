@@ -190,14 +190,13 @@
             <div class="form-group">
               <label class="control-label col-sm-2" for="order_item_status">Status:</label>
               <div class="col-sm-10">
-                <select class="form-control" id="order_status">
-                  <option value="NEW" selected>INTSTOCK</option>
-                  <option value="PENDING" selected>LOWSTOCK</option>
-                  <option value="APPROVED" selected>NOSTOCK</option>
+                <select class="form-control" id="order_item_status">
+                  <option value="INSTOCK" selected>INTSTOCK</option>
+                  <option value="LOWSTOCK" selected>LOWSTOCK</option>
+                  <option value="NOSTOCK" selected>NOSTOCK</option>
                 </select>
               </div>
             </div>
-
 
 
             <!-- SUBMIT BUTTONS -->
@@ -223,8 +222,8 @@
             <th class="col-md-3">Name</th>
             <th class="col-md-3">Price</th>
             <th class="col-md-4">Quantity</th>
-            <th class="col-md-4">Order ID</th>
-            <th class="col-md-5">Status</th>
+            <th class="col-md-2">Order ID</th>
+            <th class="col-md-2">Status</th>
           </tr>
           </thead>
         </table>
