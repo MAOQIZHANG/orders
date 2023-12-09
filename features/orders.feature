@@ -25,13 +25,13 @@ Scenario: Create an Order
     And I set the "Cost Amount" to "0"
     And I select "NEW" in the "Status" dropdown
     And I set the "User ID" to "1234"
-    And I press the "Create" button
+    And I press the "Order-Create" button
     Then I should see the message "Success"
     When I copy the "ID" field
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     Then the "ID" field should be empty
     When I paste the "ID" field
-    And I press the "Retrieve" button
+    And I press the "Order-Retrieve" button
     Then I should see the message "Success"
     And I should see "Micheal Potter" in the "Name" field
     And I should see "2022-10-18T04:40:35.231701+00:00" in the "Create Time" field
@@ -43,8 +43,8 @@ Scenario: Create an Order
 
 Scenario: List all orders
     When I visit the "Home Page"
-    And I press the "Clear" button
-    And I press the "Search" button
+    And I press the "Order-Clear" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     And I should see "Ariana Grande" in the results
     And I should see "Kanye West" in the results
@@ -54,9 +54,9 @@ Scenario: List all orders
 
 Scenario: Search orders status
     When I visit the "Home Page"
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     And I select "NEW" in the "Status" dropdown
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     And I should see "Ariana Grande" in the results
     And I should see "Kanye West" in the results
@@ -65,9 +65,9 @@ Scenario: Search orders status
 
 Scenario: Search orders user_id
     When I visit the "Home Page"
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     And I set the "User ID" to "25"
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     And I should see "Ariana Grande" in the results
     And I should not see "Kanye West" in the results
@@ -75,9 +75,9 @@ Scenario: Search orders user_id
 
 Scenario: Search orders name
     When I visit the "Home Page"
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     And I set the "Name" to "New Jeans"
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     And I should see "APPROVED" in the results
     And I should not see "Kanye West" in the results
@@ -87,17 +87,17 @@ Scenario: Search orders name
 
 Scenario: Update an Order
     When I visit the "Home Page"
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     And I set the "Name" to "Ariana Grande"
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     And I should see "Ariana Grande" in the "Name" field
     And I should see "NEW" in the "Status" dropdown
     WHEN I select "APPROVED" in the "Status" dropdown
-    And I press the "Update" button
+    And I press the "Order-Update" button
     Then I should see the message "Success"
     When I set the "User ID" to "25"
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     AND I should see "APPROVED" in the results
     And I should not see "NEW" in the results
@@ -106,35 +106,35 @@ Scenario: Update an Order
 Scenario: Retrieve an Order
     When I visit the "Home Page"
     And I set the "Name" to "Ariana Grande"
-    And I press the "Clear" button
-    And I press the "Search" button
+    And I press the "Order-Clear" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     When I copy the "Id" field
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     Then the "Id" field should be empty
     And the "Name" field should be empty
     When I paste the "Id" field
-    And I press the "Retrieve" button
+    And I press the "Order-Retrieve" button
     Then I should see the message "Success"
     And I should see "Ariana Grande" in the "Name" field
 
 
 Scenario: Delete an Order
     When I visit the "Home Page"
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     And I set the "Name" to "Ariana Grande"
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     When I copy the "Id" field
-    And I press the "Clear" button
+    And I press the "Order-Clear" button
     Then the "Id" field should be empty
     And the "Name" field should be empty
     When I paste the "Id" field
-    And I press the "Delete" button
+    And I press the "Order-Delete" button
     Then I should see the message "Order has been Deleted!"
     And the "Name" field should be empty
-    When I press the "Clear" button
-    And I press the "Search" button
+    When I press the "Order-Clear" button
+    And I press the "Order-Search" button
     Then I should not see "Ariana Grande" in the results
 
 
