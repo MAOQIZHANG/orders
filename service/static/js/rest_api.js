@@ -391,7 +391,7 @@ $(function () {
             table += '<th class="col-md-2">Product ID</th>'
             table += '<th class="col-md-3">Name</th>'
             table += '<th class="col-md-2">Price</th>'
-            table += '<th class="col-md-4">Quantity</th>'
+            table += '<th class="col-md-2">Quantity</th>'
             table += '<th class="col-md-2">Order ID</th>'
             table += '<th class="col-md-2">Status</th>'
             table += '</tr></thead><tbody>'

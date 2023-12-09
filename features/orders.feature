@@ -163,6 +163,33 @@ Scenario: Cancel an Order
 
 
 Scenario: Create an Item in an Order
+    When I visit the "Home Page"
+    And I press the "Order-Clear" button
+    And I press the "Order-Search" button
+    Then I should see the message "Success"
+    When I copy the "ID" field
+    And I press the "Order-Clear" button
+    Then the "ID" field should be empty
+    When I paste the "Order ID" field
+    And I set the "Product ID" to "1234"
+    And I set the "Title" to "Ipad"
+    And I set the "Price" to "799"
+    And I set the "Amount" to "1"
+    And I select "INSTOCK" in the "Item Status" dropdown
+    And I press the "Item-Create" button
+    Then I should see the message "Success"
+    When I paste the "Order ID" field
+    And I set the "Product ID" to "999"
+    And I set the "Title" to "Ipad mini"
+    And I set the "Price" to "599"
+    And I set the "Amount" to "1"
+    And I select "INSTOCK" in the "Item Status" dropdown
+    And I press the "Item-Create" button
+    Then I should see the message "Success"
+    When I paste the "Order ID" field
+    And I press the "Item-List" button
+    Then I should see "Ipad" in the item list
+    And I should see "Ipad mini" in the item list
 
 
 Scenario: List Items in an Order
@@ -179,6 +206,45 @@ Scenario: List Items in an Order
     
 
 Scenario: Delete Items in an Order
+    When I visit the "Home Page"
+    And I press the "Order-Clear" button
+    And I press the "Order-Search" button
+    Then I should see the message "Success"
+    When I copy the "ID" field
+    And I press the "Order-Clear" button
+    Then the "ID" field should be empty
+    When I paste the "Order ID" field
+    And I set the "Product ID" to "1000"
+    And I set the "Title" to "Iphone 15 PRO MAX"
+    And I set the "Price" to "1199"
+    And I set the "Amount" to "1"
+    And I select "INSTOCK" in the "Item Status" dropdown
+    And I press the "Item-Create" button
+    Then I should see the message "Success"
+    When I press the "Item-Delete" button
+    And I paste the "Order ID" field
+    And I press the "Item-List" button
+    Then I should not see "Iphone 13 PRO MAX" in the item list
+
 
     
 Scenario: Update Items in an Order
+    When I visit the "Home Page"
+    And I press the "Order-Clear" button
+    And I press the "Order-Search" button
+    Then I should see the message "Success"
+    When I copy the "ID" field
+    And I press the "Order-Clear" button
+    Then the "ID" field should be empty
+    When I paste the "Order ID" field
+    And I set the "Product ID" to "1000"
+    And I set the "Title" to "Iphone 15 PRO"
+    And I set the "Price" to "999"
+    And I set the "Amount" to "1"
+    And I select "INSTOCK" in the "Item Status" dropdown
+    And I press the "Item-Create" button
+    Then I should see the message "Success"
+    When I select "NOSTOCK" in the "Item Status" dropdown
+    And I press the "Item-Update" button
+    And I press the "Item-List" button
+    Then I should not see "INSTOCK" in the item list
