@@ -142,7 +142,7 @@ Scenario: Cancel an Order
     When I visit the "Home Page"
     And I press the "Order-Clear" button
     And I set the "Name" to "Ariana Grande"
-    And I press the "Search" button
+    And I press the "Order-Search" button
     Then I should see the message "Success"
     When I copy the "Id" field
     And I press the "Order-Clear" button
